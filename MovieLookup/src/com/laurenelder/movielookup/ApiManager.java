@@ -24,10 +24,10 @@ public class ApiManager {
 	static getAPIdata getData;
 	static String fullURL = "";
 	
-    public ApiManager(String fullURL) {
+/*    public ApiManager(String fullURL) {
 		super();
 		ApiManager.fullURL = fullURL;
-	}
+	}*/
 
 	// API Method
     public static String getAPIresponse(URL url) {
@@ -70,6 +70,7 @@ public class ApiManager {
 		protected String doInBackground(String... params) {
 			// TODO Auto-generated method stub
 			String APIresponseStr = "";
+			
 
 			// API Call based on Selected API
 			if (!fullURL.matches("")) {
@@ -97,8 +98,11 @@ public class ApiManager {
 		}
     }
 
-	public static String getData() {
+	public static String getData(String myURL) {
+		Log.i(tag, "API Manager Class hit");
 		// TODO Auto-generated method stub
+		Log.i(tag, fullURL.toString());
+		fullURL = myURL;
 		getData = new getAPIdata();
 		String response = "";
 		try {

@@ -7,7 +7,7 @@
     <string name="title_text">Search to find all the information on your favorite movies!</string>
     <string name="button_text">Find!</string>
     <string name="search_hint">Star Trek</string>
-    <string name="pre_api">Star Trek</string>
+    <string name="main_api">http://www.omdbapi.com/?s=Star%20Trek_r=JSON</string>
     <string name="post_api">Star Trek</string>
     <string name="input_notification">Please enter a movie you would like to search for.</string>
     <string name="connection_notification">Connection Error: Please check to make sure you have an internet connection.</string>

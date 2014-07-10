@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
 	static String tag = "MAINACTIVITY";
 	EditText searchField;
 	Button findButton;
+	Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class MainActivity extends Activity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        context = this;
         searchField = (EditText)findViewById(R.id.searchField);
         findButton = (Button)findViewById(R.id.findButton);
         findButton.setOnClickListener(new OnClickListener(){
@@ -71,9 +74,12 @@ public class MainActivity extends Activity {
 					};
 					Messenger apiMessenger = new Messenger(apiHandler);
 					
-					Intent startApiIntent = new Intent(this, ApiService.class);
+					String myURL = getResources().getString(R.string.main_api);
+					myURL = myURL.replace("_", "&");
+					
+					Intent startApiIntent = new Intent(context, ApiService.class);
 					startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
-					startApiIntent.putExtra(ApiService.INPUT_KEY, searchField.getText().toString());
+					startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
 					startService(startApiIntent);
 					showNotfication("searching");
 				}

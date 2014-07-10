@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
 	EditText searchField;
 	Button findButton;
 	static Context context;
-//	String externalFileName = getResources().getString(R.string.file_name);
+	String externalFileName = getResources().getString(R.string.file_name);
 	
 	// Array Adapter
 	ArrayAdapter<MovieListItems> listAdapter;
@@ -92,8 +92,7 @@ public class MainActivity extends Activity {
 							// TODO Auto-generated method stub
 							if (msg.arg1 == RESULT_OK) {
 								Log.i(tag, msg.obj.toString());
-								String externalFileName = getResources().getString(R.string.file_name);
-								fileManager.writeToFile(context, externalFileName, msg.obj.toString());
+//								fileManager.writeToFile(context, externalFileName, msg.obj.toString());
 								parseData(msg.obj.toString());
 								// Check to make sure raw JSON was saved
 								// Run parse method and save parsed data

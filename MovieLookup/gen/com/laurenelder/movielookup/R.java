@@ -48,6 +48,7 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int button_text=0x7f050004;
         public static final int connection_notification=0x7f050009;
+        public static final int file_name=0x7f05000b;
         public static final int hello_world=0x7f050001;
         public static final int input_notification=0x7f050008;
         public static final int main_api=0x7f050006;

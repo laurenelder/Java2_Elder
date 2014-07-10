@@ -50,12 +50,10 @@ import android.os.Build;
 public class MainActivity extends Activity {
 	
 	// Global Variables
-	FileManager fileManager;
 	static String tag = "MAINACTIVITY";
 	EditText searchField;
 	Button findButton;
 	static Context context;
-//	String externalFileName = getResources().getString(R.string.file_name);
 	
 	// Array Adapter
 	ArrayAdapter<MovieListItems> listAdapter;
@@ -74,7 +72,6 @@ public class MainActivity extends Activity {
                     .commit();
         }
         context = this;
-        fileManager = FileManager.getInstance();
         searchField = (EditText)findViewById(R.id.searchField);
         findButton = (Button)findViewById(R.id.findButton);
         findButton.setOnClickListener(new OnClickListener(){
@@ -92,8 +89,6 @@ public class MainActivity extends Activity {
 							// TODO Auto-generated method stub
 							if (msg.arg1 == RESULT_OK) {
 								Log.i(tag, msg.obj.toString());
-								String externalFileName = getResources().getString(R.string.file_name);
-								fileManager.writeToFile(context, externalFileName, msg.obj.toString());
 								parseData(msg.obj.toString());
 								// Check to make sure raw JSON was saved
 								// Run parse method and save parsed data

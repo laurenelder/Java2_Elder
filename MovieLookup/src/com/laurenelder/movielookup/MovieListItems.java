@@ -1,3 +1,12 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 10, 2014
+ * Class:			Java 2 Term 1407
+ */
+
+// Movie Objects to be used to populate listView
 package com.laurenelder.movielookup;
 
 public class MovieListItems {

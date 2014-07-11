@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- MovieLookup -->
+<!-- com.laurenelder.movielookup -->
+<!-- Devin "Lauren" Elder -->
+<!-- Jul 9, 2014 -->
+<!-- Java 2 Term 1407 -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
@@ -10,7 +17,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="7dp"
-        android:text="Star Trek III: The Search for Spock"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -20,7 +27,7 @@
         android:layout_alignBottom="@+id/movieTitle"
         android:layout_alignParentRight="true"
         android:layout_marginRight="7dp"
-        android:text="1984"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
@@ -30,7 +37,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/movieYear"
         android:layout_marginRight="7dp"
-        android:text="movie"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

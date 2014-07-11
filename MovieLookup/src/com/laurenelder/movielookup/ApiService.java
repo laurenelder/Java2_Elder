@@ -8,16 +8,9 @@
 
 package com.laurenelder.movielookup;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -29,7 +22,6 @@ public class ApiService extends IntentService {
 	static String tag = "ApiService";
 	public static final String MESSENGER_KEY = "messenger";
 	public static final String INPUT_KEY = "input";
-	String constructedURL = "";
 
 	public ApiService() {
 		super("ApiService");
@@ -41,16 +33,14 @@ public class ApiService extends IntentService {
 		// TODO Auto-generated method stub
 		Log.i(tag, "API Service Started");
 		
+		// Set Intent Attributes
 		Bundle extras = intent.getExtras();
 		Messenger theMessenger = (Messenger)extras.get(MESSENGER_KEY);
 		String url = extras.getString(INPUT_KEY);
-				
-//		constructedURL = R.string.pre_api + searchInput + R.string.post_api;
-//		ApiManager(constructedURL);
-//		ApiManager.getData();
-//		Log.i(tag, ApiManager.getData().toString());
 		Message message = Message.obtain();
 		message.arg1 = Activity.RESULT_OK;
+		
+		// Call apiManager for API call
 		message.obj = ApiManager.getData(url.toString()).toString();
 		try {
 			theMessenger.send(message);

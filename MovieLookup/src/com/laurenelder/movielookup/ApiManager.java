@@ -23,11 +23,6 @@ public class ApiManager {
 	static String tag = "ApiManager";
 	static getAPIdata getData;
 	static String fullURL = "";
-	
-/*    public ApiManager(String fullURL) {
-		super();
-		ApiManager.fullURL = fullURL;
-	}*/
 
 	// API Method
     public static String getAPIresponse(URL url) {
@@ -62,15 +57,11 @@ public class ApiManager {
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
 			super.onPreExecute();
-
-			// Show Animation
-//			animation.setVisibility(View.VISIBLE);
 		}
 		@Override
 		protected String doInBackground(String... params) {
 			// TODO Auto-generated method stub
 			String APIresponseStr = "";
-			
 
 			// API Call based on Selected API
 			if (!fullURL.matches("")) {
@@ -91,13 +82,10 @@ public class ApiManager {
 		protected void onPostExecute(String result) {
 //			Log.i(tag, result);
 			super.onPostExecute(result);
-
-			// Hide Animation
-//			animation.setVisibility(View.GONE);
-
 		}
     }
 
+    // Call API Method and return response
 	public static String getData(String myURL) {
 		Log.i(tag, "API Manager Class hit");
 		// TODO Auto-generated method stub

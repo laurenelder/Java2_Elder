@@ -1,3 +1,9 @@
+<!-- MovieLookup -->
+<!-- com.laurenelder.movielookup -->
+<!-- Devin "Lauren" Elder -->
+<!-- Jul 9, 2014 -->
+<!-- Java 2 Term 1407 -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -30,6 +36,10 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="7dp"
             android:hint="@string/search_hint"
+            android:text="@string/search_hint"
+            android:inputType="none"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:ems="10" >
 
             <requestFocus />
@@ -51,7 +61,8 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp" >
     </ListView>
     
 </LinearLayout>

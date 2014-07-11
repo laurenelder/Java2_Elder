@@ -8,9 +8,7 @@
 
 package com.laurenelder.movielookup;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +41,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Build;
 
 public class MainActivity extends Activity {
 	
@@ -55,12 +50,13 @@ public class MainActivity extends Activity {
 	EditText searchField;
 	Button findButton;
 	static Context context;
-//	String externalFileName = getResources().getString(R.string.file_name);
+	String externalFileName;
+	static Handler apiHandler;
 	
-	// Array Adapter
+	// Array Adapter for ListView
 	ArrayAdapter<MovieListItems> listAdapter;
 	
-	// Class List
+	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
 
     @Override
@@ -73,10 +69,43 @@ public class MainActivity extends Activity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        
+        // Set Variables after UI has Loaded
         context = this;
         fileManager = FileManager.getInstance();
         searchField = (EditText)findViewById(R.id.searchField);
         findButton = (Button)findViewById(R.id.findButton);
+        externalFileName = getResources().getString(R.string.file_name);
+        
+        // ListView Adapter Code 
+		listAdapter = new customListAdapter();
+        ListView listView = (ListView)findViewById(R.id.list);
+		listView.setAdapter(listAdapter);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			// Handle onClick for list items
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				// Load Movie Details UI here
+			}
+
+		});
+        
+		// Check for saved file and parse if available
+        File checkForFile = getBaseContext().getFileStreamPath(externalFileName);
+        if (checkForFile.exists()) {
+        	findButton.setEnabled(false);
+        	String fileContent = fileManager.readFromFile(context, externalFileName);
+        	Log.i(tag, fileContent.toString());
+        	if (!fileContent.isEmpty()) {
+        		parseData(fileContent.toString(), "movieList");
+        	}
+        } else {
+        	findButton.setEnabled(true);
+        }
+        
         findButton.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -85,29 +114,36 @@ public class MainActivity extends Activity {
 				if (searchField.getText().toString().matches("")) {
 					showNotfication("input");
 				} else {
-					Handler apiHandler = new Handler() {
+					
+					// apiService Intent, Handler, and Start
+					apiHandler = new Handler() {
 
 						@Override
 						public void handleMessage(Message msg) {
 							// TODO Auto-generated method stub
 							if (msg.arg1 == RESULT_OK) {
+								
+								// Write to internal file and disable button to prevent further api calls
 								Log.i(tag, msg.obj.toString());
-								String externalFileName = getResources().getString(R.string.file_name);
 								fileManager.writeToFile(context, externalFileName, msg.obj.toString());
-								parseData(msg.obj.toString());
-								// Check to make sure raw JSON was saved
-								// Run parse method and save parsed data
-								// Update UI with parsed data
+					        	findButton.setEnabled(false);
+					        	
+					        	// Read and parse date from internal file
+					        	String fileContent = fileManager.readFromFile(context, externalFileName);
+								parseData(fileContent.toString(), "movieList");
 							}
 						}
 					};
 					
+					// Network connection check
 					if (checkNetworkConnection(context)) {
 						Messenger apiMessenger = new Messenger(apiHandler);
 						
+						// Properly format URL
 						String myURL = getResources().getString(R.string.main_api);
 						myURL = myURL.replace("_", "&");
 						
+						// Start intent service
 						Intent startApiIntent = new Intent(context, ApiService.class);
 						startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
 						startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
@@ -119,21 +155,6 @@ public class MainActivity extends Activity {
 				}
 			}
         });
-        
-        // ListView Code 
-		listAdapter = new customListAdapter();
-        ListView listView = (ListView)findViewById(R.id.list);
-		listView.setAdapter(listAdapter);
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				// Load Movie Details UI here
-			}
-
-		});
     }
 
     @Override
@@ -172,7 +193,7 @@ public class MainActivity extends Activity {
         }
     }
     
-	// Error Notification
+	// User Notifications
 	private void showNotfication(String myNotification) {
     	
     	// Set Alert Text based on Error
@@ -187,44 +208,49 @@ public class MainActivity extends Activity {
     	}
     }
 	
-	// Get and Parse JSON Function
-	public void parseData(String apiData) {
+	// Get and Parse JSON Function... (apiData = Raw JSON code)(apiType = specifies the type of parsing code)
+	public Boolean parseData(String apiData, String apiType) {
 
+		Boolean completed = false;
 		String jsonString = null;
 		if (apiData != null) {
 			jsonString = apiData;
 		}
 
 		// Parse JSON
-		try {
-			// Creating JSONObject from String
-				JSONObject mainObject = new JSONObject(jsonString);
-				JSONArray subObject = mainObject.getJSONArray("Search");
-				Log.i(tag, subObject.toString());
+		if (apiType.matches("movieList")) {
+			try {
+				// Creating JSONObject from String
+					JSONObject mainObject = new JSONObject(jsonString);
+					JSONArray subObject = mainObject.getJSONArray("Search");
+					Log.i(tag, subObject.toString());
 
-				for (int i = 0; i < subObject.length(); i ++) {
-					JSONObject movieObject = subObject.getJSONObject(i);
-					// Class Specific Data
-					
-					String thisName = movieObject.getString("Title");
-					String thisYear = movieObject.getString("Year");
-					String thisType = movieObject.getString("Type");
-					String thisID = movieObject.getString("imdbID");
-					Log.i(tag, thisName);
-					Log.i(tag, thisYear);
-					Log.i(tag, thisType);
-					Log.i(tag, thisID);
+					for (int i = 0; i < subObject.length(); i ++) {
+						JSONObject movieObject = subObject.getJSONObject(i);
+						// Class Specific Data
+						
+						String thisName = movieObject.getString("Title");
+						String thisYear = movieObject.getString("Year");
+						String thisType = movieObject.getString("Type");
+						String thisID = movieObject.getString("imdbID");
+						Log.i(tag, thisName);
+						Log.i(tag, thisYear);
+						Log.i(tag, thisType);
+						Log.i(tag, thisID);
 
-					// Save Data Here
-					setClass(thisName, thisYear, thisType, thisID);
-				}
-				listAdapter.notifyDataSetChanged();
-		} 
-		catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.e(tag, e.getMessage().toString());
-			e.printStackTrace();
+						// Save Data Here
+						setClass(thisName, thisYear, thisType, thisID);
+					}
+					listAdapter.notifyDataSetChanged();
+					completed = true;
+			} 
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.e(tag, e.getMessage().toString());
+				e.printStackTrace();
+			}
 		}
+		return completed;
 	}
 
 	// Save Parsed Data to Class
@@ -269,6 +295,7 @@ public class MainActivity extends Activity {
 				customItemView = viewInflater.inflate(R.layout.custom_list_item, parent, false);
 			}
 
+			// Set Values for UI elements in custom cell
 			TextView name = (TextView)customItemView.findViewById(R.id.movieTitle);
 			TextView year = (TextView)customItemView.findViewById(R.id.movieYear);
 			TextView type = (TextView)customItemView.findViewById(R.id.movieType);

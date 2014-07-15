@@ -5,7 +5,7 @@
  * Date:			Jul 9, 2014
  * Class:			Java 2 Term 1407
  */
-
+/*
 package com.laurenelder.movielookup;
 
 import java.io.BufferedInputStream;
@@ -105,4 +105,4 @@ public class ApiManager {
 		return response;
 	}
 	
-}
+}*/

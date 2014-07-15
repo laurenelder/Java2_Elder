@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -51,13 +52,18 @@ public class MainActivity extends Activity {
 	Button findButton;
 	static Context context;
 	String externalFileName;
-	static Handler apiHandler;
+	static Handler apiHandler = null;
+	boolean detailApi = false;
+	String myURL;
+	String na;
+//	Integer fileNameModifier = 0;
 	
 	// Array Adapter for ListView
 	ArrayAdapter<MovieListItems> listAdapter;
 	
 	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
+	List<MovieDetails> movieDetails = new ArrayList<MovieDetails>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,7 @@ public class MainActivity extends Activity {
         searchField = (EditText)findViewById(R.id.searchField);
         findButton = (Button)findViewById(R.id.findButton);
         externalFileName = getResources().getString(R.string.file_name);
+        na = getResources().getString(R.string.n_a);
         
         // ListView Adapter Code 
 		listAdapter = new customListAdapter();
@@ -86,9 +93,48 @@ public class MainActivity extends Activity {
 			// Handle onClick for list items
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+					final int position, long id) {
 				
 				// Load Movie Details UI here
+				apiHandler = new Handler() {
+
+					@Override
+					public void handleMessage(Message msg) {
+						// TODO Auto-generated method stub
+						if (msg.arg1 == RESULT_OK) {
+							
+							// Write to internal file and disable button to prevent further api calls
+							Log.i(tag, msg.obj.toString());
+				       
+					        String detailFileName = movieList.get(position).movieName.toString() + 
+					        	getResources().getString(R.string.detail_file_name);
+					        fileManager.writeToFile(context, detailFileName, msg.obj.toString());
+//					        String fileContent = fileManager.readFromFile(context, detailFileName);
+//					        parseData(fileContent.toString(), "movieDetails");
+//					        fileNameModifier = fileNameModifier + 1;
+						}
+					}
+				};
+				
+				// Network connection check
+				if (checkNetworkConnection(context)) {
+					// Set boolean to determine parse method details
+					Messenger apiMessenger = new Messenger(apiHandler);
+						
+					// Properly format URL
+					myURL = getResources().getString(R.string.pre_detail_api) + movieList.get(position).movieID.toString()
+							+ getResources().getString(R.string.post_detail_api);
+					myURL = myURL.replace("_", "&");
+							
+					// Start intent service
+					Intent startApiIntent = new Intent(context, ApiService.class);
+					startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
+					startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
+					startService(startApiIntent);
+					showNotfication("searching");
+				} else {
+					showNotfication("connection");
+				}
 			}
 
 		});
@@ -98,9 +144,19 @@ public class MainActivity extends Activity {
         if (checkForFile.exists()) {
         	findButton.setEnabled(false);
         	String fileContent = fileManager.readFromFile(context, externalFileName);
-        	Log.i(tag, fileContent.toString());
+//        	Log.i(tag, fileContent.toString());
         	if (!fileContent.isEmpty()) {
         		parseData(fileContent.toString(), "movieList");
+        	}
+        	for (Integer q = 0; q < 10; q++) {
+        		String detailFileName = q.toString() + getResources().getString(R.string.detail_file_name);
+        		File checkForDetailsFile = getBaseContext().getFileStreamPath(detailFileName);
+        		if (checkForDetailsFile.exists()) {
+        			String detailFileContent = fileManager.readFromFile(context, detailFileName);
+        			if (!detailFileContent.isEmpty()) {
+        				parseData(detailFileContent.toString(), "movieDetails");
+        			}
+        		}
         	}
         } else {
         	findButton.setEnabled(true);
@@ -125,24 +181,25 @@ public class MainActivity extends Activity {
 								
 								// Write to internal file and disable button to prevent further api calls
 								Log.i(tag, msg.obj.toString());
-								fileManager.writeToFile(context, externalFileName, msg.obj.toString());
 					        	findButton.setEnabled(false);
 					        	
 					        	// Read and parse date from internal file
+					        	fileManager.writeToFile(context, externalFileName, msg.obj.toString());
 					        	String fileContent = fileManager.readFromFile(context, externalFileName);
-								parseData(fileContent.toString(), "movieList");
+					        	parseData(fileContent.toString(), "movieList");
 							}
 						}
 					};
 					
 					// Network connection check
 					if (checkNetworkConnection(context)) {
+						// Set boolean to determine parse method details
 						Messenger apiMessenger = new Messenger(apiHandler);
-						
+							
 						// Properly format URL
-						String myURL = getResources().getString(R.string.main_api);
+						myURL = getResources().getString(R.string.main_api);
 						myURL = myURL.replace("_", "&");
-						
+								
 						// Start intent service
 						Intent startApiIntent = new Intent(context, ApiService.class);
 						startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
@@ -217,13 +274,15 @@ public class MainActivity extends Activity {
 			jsonString = apiData;
 		}
 
+//		String type = null;
 		// Parse JSON
 		if (apiType.matches("movieList")) {
+//			type = "movieList";
 			try {
 				// Creating JSONObject from String
 					JSONObject mainObject = new JSONObject(jsonString);
 					JSONArray subObject = mainObject.getJSONArray("Search");
-					Log.i(tag, subObject.toString());
+//					Log.i(tag, subObject.toString());
 
 					for (int i = 0; i < subObject.length(); i ++) {
 						JSONObject movieObject = subObject.getJSONObject(i);
@@ -233,13 +292,29 @@ public class MainActivity extends Activity {
 						String thisYear = movieObject.getString("Year");
 						String thisType = movieObject.getString("Type");
 						String thisID = movieObject.getString("imdbID");
-						Log.i(tag, thisName);
+/*						Log.i(tag, thisName);
 						Log.i(tag, thisYear);
 						Log.i(tag, thisType);
-						Log.i(tag, thisID);
+						Log.i(tag, thisID);*/
+						
+						// Not Applicable
+						String detailName = na;
+						String detailYear = na;
+						String detailRated = na;
+						String detailReleased = na;
+						String detailRuntime = na;
+						String detailGenre = na;
+						String detailDirector = na;
+						String detailActors = na;
+						String detailPlot = na;
+						String detailAwards = na;
+						String detailImage = na;
+						String detailScore = na;
 
 						// Save Data Here
-						setClass(thisName, thisYear, thisType, thisID);
+						setClass(apiType, thisName, thisYear, thisType, thisID, detailName, detailYear, detailRated
+								, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
+								, detailPlot, detailAwards, detailImage, detailScore);
 					}
 					listAdapter.notifyDataSetChanged();
 					completed = true;
@@ -247,6 +322,61 @@ public class MainActivity extends Activity {
 			catch (JSONException e) {
 				// TODO Auto-generated catch block
 				Log.e(tag, e.getMessage().toString());
+				Log.i(tag, "Something went wrong parsing movieList");
+				e.printStackTrace();
+			}
+		}
+		if (apiType.matches("movieDetails")) {
+//			type = "movieDetails";
+			try {
+				
+				// Creating JSONObject from String
+					JSONObject mainObject = new JSONObject(jsonString);
+
+					Log.i(tag, mainObject.toString());
+					
+						// Class Specific Data
+						String detailName = mainObject.getString("Title");
+						String detailYear = mainObject.getString("Year");
+						String detailRated = mainObject.getString("Rated");
+						String detailReleased = mainObject.getString("Released");
+						String detailRuntime = mainObject.getString("Runtime");
+						String detailGenre = mainObject.getString("Genre");
+						String detailDirector = mainObject.getString("Director");
+						String detailActors = mainObject.getString("Actors");
+						String detailPlot = mainObject.getString("Plot");
+						String detailAwards = mainObject.getString("Awards");
+						String detailImage = mainObject.getString("Poster");
+						String detailScore = mainObject.getString("Metascore");
+/*						Log.i(tag, detailName);
+						Log.i(tag, detailYear);
+						Log.i(tag, detailRated);
+						Log.i(tag, detailReleased);
+						Log.i(tag, detailRuntime);
+						Log.i(tag, detailGenre);
+						Log.i(tag, detailDirector);
+						Log.i(tag, detailActors);
+						Log.i(tag, detailPlot);
+						Log.i(tag, detailAwards);
+						Log.i(tag, detailImage);
+						Log.i(tag, detailScore);*/
+						
+						// Not Applicable
+						String thisName = na;
+						String thisYear = na;
+						String thisType = na;
+						String thisID = na;
+
+						// Save Data Here
+						setClass(apiType, thisName, thisYear, thisType, thisID, detailName, detailYear, detailRated
+								, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
+								, detailPlot, detailAwards, detailImage, detailScore);
+					completed = true;
+			} 
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.e(tag, e.getMessage().toString());
+				Log.i(tag, "Something went wrong parsing movieDetails");
 				e.printStackTrace();
 			}
 		}
@@ -254,10 +384,24 @@ public class MainActivity extends Activity {
 	}
 
 	// Save Parsed Data to Class
-	public void setClass(String name, String year, String type, String ID) {
-		MovieListItems newMovie = new MovieListItems(name, year, type, ID);
-		movieList.add(newMovie);
-		Log.i(tag, newMovie.toString());
+	public void setClass(String type, String name, String year, String movieType, String ID, String detailTitle, String detailYear,
+			String detailRated, String detailReleased, String detailRuntime, String detailGenre, String detailDirector,
+			String detailActors, String detailPlot, String detailAwards, String detailImage, String detailScore) {
+		if (type.matches("movieList")) {
+			MovieListItems newMovie = new MovieListItems(name, year, movieType, ID);
+			movieList.add(newMovie);
+			Log.i(tag, ID.toString());
+			Log.i(tag, movieList.get(0).movieID.toString());
+//			Log.i(tag, newMovie.toString());
+		}
+		if (type.matches("movieDetails")) {
+			MovieDetails newMovieDetails = new MovieDetails(detailTitle, detailYear,
+					detailRated, detailReleased, detailRuntime, detailGenre, detailDirector,
+					detailActors, detailPlot, detailAwards, detailImage, detailScore);
+			movieDetails.add(newMovieDetails);
+			Log.i(tag, newMovieDetails.toString());
+		}
+
 	}
 	
     // Check Network Connection Method
@@ -269,8 +413,8 @@ public class MainActivity extends Activity {
     	NetworkInfo networkInfomation = connManag.getActiveNetworkInfo();
     	if (networkInfomation != null) {
     		if (networkInfomation.isConnected()) {
-    			Log.i(tag, "Connection Type: " + networkInfomation.getTypeName()
-    					.toString());
+/*    			Log.i(tag, "Connection Type: " + networkInfomation.getTypeName()
+    					.toString());*/
     			connected = true;
     		}
     	}
@@ -287,8 +431,8 @@ public class MainActivity extends Activity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View customItemView = convertView;
-			
-			Log.i(tag, "Custom Adapter Hit");
+		
+//			Log.i(tag, "Custom Adapter Hit");
 
 			if (customItemView == null) {
 				LayoutInflater viewInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

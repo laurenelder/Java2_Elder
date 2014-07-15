@@ -8,6 +8,12 @@
 
 package com.laurenelder.movielookup;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
@@ -40,7 +46,38 @@ public class ApiService extends IntentService {
 		Message message = Message.obtain();
 		message.arg1 = Activity.RESULT_OK;
 		
-		// Call apiManager for API call
+    	String apiResponse = "";
+    	
+    	try {
+    		URL fullURL = new URL(url);
+			URLConnection apiConnection = fullURL.openConnection();
+			BufferedInputStream bufferedInput = new BufferedInputStream(apiConnection
+					.getInputStream());
+			byte[] contextByte = new byte[1024];
+			int bytesRead = 0;
+			StringBuffer responseBuffer = new StringBuffer();
+			while ((bytesRead = bufferedInput.read(contextByte)) != -1) {
+				apiResponse = new String(contextByte, 0, bytesRead);
+				responseBuffer.append(apiResponse);
+			}
+			apiResponse = responseBuffer.toString();
+//			Log.i(tag, apiResponse);
+			message.obj = apiResponse;
+			try {
+				theMessenger.send(message);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.i(tag, "No data returned in APIresponse");
+			
+			e.printStackTrace();
+		}
+    	Log.i(tag, apiResponse.toString());
+		
+/*		// Call apiManager for API call
 		message.obj = ApiManager.getData(url.toString()).toString();
 		try {
 			theMessenger.send(message);
@@ -48,6 +85,6 @@ public class ApiService extends IntentService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e(tag, e.getMessage().toString());
-		}
+		}*/
 	}
 }

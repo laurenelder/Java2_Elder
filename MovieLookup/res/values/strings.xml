@@ -21,5 +21,7 @@
     <string name="connection_notification">Connection Error: Please check to make sure you have an internet connection.</string>
     <string name="searching_notification">We are searching for your movie</string>
     <string name="file_name">apiJSONdata.txt</string>
+    <string name="detail_file_name">.txt</string>
+    <string name="n_a">Not Applicable</string>
 
 </resources>

@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <service android:name="ApiService"></service>
+        <activity android:name="DetailActivity"></activity>
     </application>
 
 </manifest>

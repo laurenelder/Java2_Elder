@@ -104,14 +104,76 @@ public class MainActivity extends Activity {
 						if (msg.arg1 == RESULT_OK) {
 							
 							// Write to internal file and disable button to prevent further api calls
-							Log.i(tag, msg.obj.toString());
+//							Log.i(tag, msg.obj.toString());
 				       
 					        String detailFileName = movieList.get(position).movieName.toString() + 
 					        	getResources().getString(R.string.detail_file_name);
-					        fileManager.writeToFile(context, detailFileName, msg.obj.toString());
+					        
+					        //
+					        File checkForFile = getBaseContext().getFileStreamPath(detailFileName);
+					        if (!checkForFile.exists()) {
+					        	fileManager.writeToFile(context, detailFileName, msg.obj.toString());
+					        }
+					        
 //					        String fileContent = fileManager.readFromFile(context, detailFileName);
 //					        parseData(fileContent.toString(), "movieDetails");
 //					        fileNameModifier = fileNameModifier + 1;
+					        
+							// Check for saved file and parse if available
+					        
+					        if (checkForFile.exists()) {
+					        	String fileContent = fileManager.readFromFile(context, detailFileName);
+					        	if (!fileContent.isEmpty()) {
+					        		if (parseData(fileContent.toString(), "movieDetails")) {
+					        			
+					        			Log.i(tag, "Movie Details Parsed");
+					        			Log.i(tag, movieDetails.toString());
+					        			
+					        			for (int k = 0; k < movieDetails.size(); k++) {
+					        				if (movieDetails.get(k).detailTitle.toString()
+					        						.matches(movieList.get(position).movieName.toString())) {
+					        					
+					        					Log.i(tag, movieDetails.get(k)
+										        		.detailTitle.toString());
+					        					
+										        // Start Detail Activity
+					        					
+										        Intent detailIntent = new Intent(context, DetailActivity.class);
+										        detailIntent.putExtra("title", movieDetails.get(k)
+										        		.detailTitle.toString());
+										        detailIntent.putExtra("year", movieDetails.get(k)
+										        		.detailYear.toString());
+										        detailIntent.putExtra("rated", movieDetails.get(k)
+										        		.detailRated.toString());
+										        detailIntent.putExtra("released", movieDetails.get(k)
+										        		.detailReleased.toString());
+										        detailIntent.putExtra("runtime", movieDetails.get(k)
+										        		.detailRuntime.toString());
+										        detailIntent.putExtra("genre", movieDetails.get(k)
+										        		.detailGenre.toString());
+										        detailIntent.putExtra("director", movieDetails.get(k)
+										        		.detailDirector.toString());
+										        detailIntent.putExtra("actors", movieDetails.get(k)
+										        		.detailActors.toString());
+										        detailIntent.putExtra("plot", movieDetails.get(k)
+										        		.detailPlot.toString());
+										        detailIntent.putExtra("awards", movieDetails.get(k)
+										        		.detailAwards.toString());
+										        detailIntent.putExtra("image", movieDetails.get(k)
+										        		.detailImage.toString());
+										        detailIntent.putExtra("score", movieDetails.get(k)
+										        		.detailScore.toString());
+										        startActivityForResult(detailIntent, 0);
+					        				}
+					        			}
+					        			
+
+					        		}
+
+					        	}
+					        }
+					        
+
 						}
 					}
 				};
@@ -131,7 +193,7 @@ public class MainActivity extends Activity {
 					startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
 					startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
 					startService(startApiIntent);
-					showNotfication("searching");
+					showNotfication("details");
 				} else {
 					showNotfication("connection");
 				}
@@ -180,7 +242,7 @@ public class MainActivity extends Activity {
 							if (msg.arg1 == RESULT_OK) {
 								
 								// Write to internal file and disable button to prevent further api calls
-								Log.i(tag, msg.obj.toString());
+//								Log.i(tag, msg.obj.toString());
 					        	findButton.setEnabled(false);
 					        	
 					        	// Read and parse date from internal file
@@ -263,6 +325,9 @@ public class MainActivity extends Activity {
     	if (myNotification == "searching") {
     		Toast.makeText(this, R.string.searching_notification, Toast.LENGTH_LONG).show();
     	}
+    	if (myNotification == "details") {
+    		Toast.makeText(this, R.string.details_notification, Toast.LENGTH_LONG).show();
+    	}
     }
 	
 	// Get and Parse JSON Function... (apiData = Raw JSON code)(apiType = specifies the type of parsing code)
@@ -333,7 +398,7 @@ public class MainActivity extends Activity {
 				// Creating JSONObject from String
 					JSONObject mainObject = new JSONObject(jsonString);
 
-					Log.i(tag, mainObject.toString());
+//					Log.i(tag, mainObject.toString());
 					
 						// Class Specific Data
 						String detailName = mainObject.getString("Title");
@@ -390,16 +455,17 @@ public class MainActivity extends Activity {
 		if (type.matches("movieList")) {
 			MovieListItems newMovie = new MovieListItems(name, year, movieType, ID);
 			movieList.add(newMovie);
-			Log.i(tag, ID.toString());
-			Log.i(tag, movieList.get(0).movieID.toString());
+//			Log.i(tag, ID.toString());
+//			Log.i(tag, movieList.get(0).movieID.toString());
 //			Log.i(tag, newMovie.toString());
 		}
 		if (type.matches("movieDetails")) {
 			MovieDetails newMovieDetails = new MovieDetails(detailTitle, detailYear,
 					detailRated, detailReleased, detailRuntime, detailGenre, detailDirector,
 					detailActors, detailPlot, detailAwards, detailImage, detailScore);
+//			Log.i(tag, newMovieDetails.toString());
 			movieDetails.add(newMovieDetails);
-			Log.i(tag, newMovieDetails.toString());
+//			Log.i(tag, newMovieDetails.toString());
 		}
 
 	}

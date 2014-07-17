@@ -37,7 +37,7 @@ public class ApiService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		// TODO Auto-generated method stub
-		Log.i(tag, "API Service Started");
+//		Log.i(tag, "API Service Started");
 		
 		// Set Intent Attributes
 		Bundle extras = intent.getExtras();

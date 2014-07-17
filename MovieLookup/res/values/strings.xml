@@ -35,5 +35,9 @@
     <string name="score_str">Metacritic Score:</string>
     <string name="image_hint">(Click Image for Larger Image)</string>
     <string name="image_desciption">Movie Poster</string>
+    <string name="alert_title">Favorite Notification</string>
+    <string name="alert_favMovie"> is now a favorite</string>
+    <string name="alert_notFavMovie"> is not a favorite</string>
+    <string name="alert_favRating">Rating Bar returned:</string>
 
 </resources>

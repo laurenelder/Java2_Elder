@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent">
+
+<LinearLayout 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <TextView
@@ -20,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="0dp"
         android:text="@string/image_hint"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -29,15 +34,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="10dp"
         android:src="@drawable/ic_launcher"
         android:clickable="true"
         android:contentDescription="@string/image_desciption" />
+    
+    <RatingBar
+	    android:id="@+id/ratingBar"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center"
+        android:numStars="1"
+	    android:stepSize="1.0"
+	    android:rating="0.0" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/yearLabel"
@@ -62,7 +76,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/ratingLabel"
@@ -87,7 +101,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/directorLabel"
@@ -112,7 +126,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/runtimeLabel"
@@ -137,7 +151,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/genreLabel"
@@ -162,7 +176,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/actorLabel"
@@ -187,7 +201,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/awardsLabel"
@@ -212,7 +226,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/scoreLabel"
@@ -246,3 +260,5 @@
         android:text="" />
 
 </LinearLayout>
+
+</ScrollView>

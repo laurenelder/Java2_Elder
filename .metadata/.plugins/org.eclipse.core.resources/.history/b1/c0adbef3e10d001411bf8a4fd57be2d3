@@ -1,0 +1,108 @@
+package com.laurenelder.movielookup;
+
+import java.io.InputStream;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+
+public class DetailActivity extends Activity {
+	
+	static String tag = "DETAILSACTIVITY";
+	ImageView image;
+	TextView titleTxt;
+	TextView yearTxt;
+	TextView directorTxt;
+	TextView ratedTxt;
+	TextView runtimeTxt;
+	TextView genreTxt;
+	TextView actorTxt;
+	TextView awardTxt;
+	TextView scoreTxt;
+	TextView plotTxt;
+	RatingBar rBar;
+	String imageURL;
+	Bitmap moviePoster;
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		setContentView(R.layout.detail_layout);
+		super.onCreate(savedInstanceState);
+		
+		Intent intent = this.getIntent();
+		
+		titleTxt = (TextView)findViewById(R.id.movieTitle);
+		yearTxt = (TextView)findViewById(R.id.movieYear);
+		directorTxt = (TextView)findViewById(R.id.movieDirector);
+		ratedTxt = (TextView)findViewById(R.id.movieRating);
+		runtimeTxt = (TextView)findViewById(R.id.movieRuntime);
+		genreTxt = (TextView)findViewById(R.id.movieGenre);
+		actorTxt = (TextView)findViewById(R.id.movieActor);
+		awardTxt = (TextView)findViewById(R.id.movieAwards);
+		scoreTxt = (TextView)findViewById(R.id.movieScore);
+		plotTxt = (TextView)findViewById(R.id.moviePlot);
+		image = (ImageView)findViewById(R.id.movieImage);
+		rBar = (RatingBar)findViewById(R.id.ratingBar);
+		
+		imageURL = getIntent().getExtras().getString("image");
+		Log.i(tag, imageURL.toString());
+		
+		new downloadImage().execute(imageURL);
+		
+		titleTxt.setText(intent.getExtras().getString("title"));
+		yearTxt.setText(intent.getExtras().getString("year"));
+		directorTxt.setText(intent.getExtras().getString("director"));
+		ratedTxt.setText(intent.getExtras().getString("rated"));
+		runtimeTxt.setText(intent.getExtras().getString("runtime"));
+		genreTxt.setText(intent.getExtras().getString("genre"));
+		actorTxt.setText(intent.getExtras().getString("actors"));
+		awardTxt.setText(intent.getExtras().getString("awards"));
+		scoreTxt.setText(intent.getExtras().getString("score"));
+		plotTxt.setText(intent.getExtras().getString("plot"));
+		
+		
+		image.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Log.i(tag, "User Clicked on Image!!");
+				Uri website = Uri.parse(imageURL);
+				Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+				startActivity(websiteIntent);
+			}
+		});
+	}
+
+	private class downloadImage extends AsyncTask<String, Void, Bitmap> {
+
+		protected Bitmap doInBackground(String... urls) {
+			String urldisplay = urls[0];
+			Bitmap moviePoster = null;
+			try {
+				InputStream stream = new java.net.URL(urldisplay).openStream();
+				moviePoster = BitmapFactory.decodeStream(stream);
+			} catch (Exception e) {
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+			}
+			return moviePoster;
+		}
+
+		protected void onPostExecute(Bitmap result) {
+			image.setImageBitmap(result);
+		}
+	}
+}

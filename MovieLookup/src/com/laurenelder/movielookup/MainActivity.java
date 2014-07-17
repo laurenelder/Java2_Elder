@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -166,14 +167,9 @@ public class MainActivity extends Activity {
 										        startActivityForResult(detailIntent, 0);
 					        				}
 					        			}
-					        			
-
 					        		}
-
 					        	}
 					        }
-					        
-
 						}
 					}
 				};
@@ -516,5 +512,41 @@ public class MainActivity extends Activity {
 
 			return customItemView;
 		}
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	Log.i(tag, "onActivityResult has been called");
+    	
+    	if (resultCode == RESULT_OK && requestCode == 0) {
+    		
+    		Log.i(tag, "Result and Request are true");
+    		
+    		if (data.hasExtra("title") && data.hasExtra("fav")) {
+    			
+    			Log.i(tag, "Extras are not null");
+    			
+    			String title = data.getStringExtra("title");
+    			Float favValue = data.getFloatExtra("fav", 0);
+
+    			String favStr = favValue.toString();
+    			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+    			dialogBuilder.setTitle(R.string.alert_title);
+    			
+    			String dialogMessage = "";
+    			
+    			if (favValue == 1.0) {
+        			dialogMessage = title + " " + getResources().getString(R.string.alert_favMovie) + "\r\n" + 
+        					getResources().getString(R.string.alert_favRating) + " " + favStr;
+    			} else {
+    				dialogMessage = title + " " + getResources().getString(R.string.alert_notFavMovie) + "\r\n" + 
+        					getResources().getString(R.string.alert_favRating) + " " + favStr;
+    			}
+    			
+    			dialogBuilder.setMessage(dialogMessage);
+    			AlertDialog alertDialog = dialogBuilder.create();
+    			alertDialog.show();
+
+    		}
+    	}
     }
 }

@@ -515,9 +515,6 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	Log.i(tag, "onActivityResult has been called");
     	
-    	// Clear Movie Details
-    	movieDetails.removeAll(movieDetails);
-    	
     	if (resultCode == RESULT_OK && requestCode == 0) {
     		
     		Log.i(tag, "Result and Request are true");
@@ -536,7 +533,7 @@ public class MainActivity extends Activity {
     			
     			String dialogMessage = "";
     			
-    			if (favValue > 2.0) {
+    			if (favValue == 1.0) {
         			dialogMessage = title + " " + getResources().getString(R.string.alert_favMovie) + "\r\n" + 
         					getResources().getString(R.string.alert_favRating) + " " + favStr;
     			} else {

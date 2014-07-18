@@ -515,9 +515,6 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	Log.i(tag, "onActivityResult has been called");
     	
-    	// Clear Movie Details
-    	movieDetails.removeAll(movieDetails);
-    	
     	if (resultCode == RESULT_OK && requestCode == 0) {
     		
     		Log.i(tag, "Result and Request are true");

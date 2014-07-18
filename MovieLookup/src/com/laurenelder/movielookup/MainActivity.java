@@ -2,7 +2,7 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 9, 2014
+ * Date:			Jul 17, 2014
  * Class:			Java 2 Term 1407
  */
 
@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -57,7 +56,6 @@ public class MainActivity extends Activity {
 	boolean detailApi = false;
 	String myURL;
 	String na;
-//	Integer fileNameModifier = 0;
 	
 	// Array Adapter for ListView
 	ArrayAdapter<MovieListItems> listAdapter;
@@ -110,35 +108,30 @@ public class MainActivity extends Activity {
 					        String detailFileName = movieList.get(position).movieName.toString() + 
 					        	getResources().getString(R.string.detail_file_name);
 					        
-					        //
+					        // Check for file (if true doesn't write to file)
 					        File checkForFile = getBaseContext().getFileStreamPath(detailFileName);
 					        if (!checkForFile.exists()) {
 					        	fileManager.writeToFile(context, detailFileName, msg.obj.toString());
 					        }
 					        
-//					        String fileContent = fileManager.readFromFile(context, detailFileName);
-//					        parseData(fileContent.toString(), "movieDetails");
-//					        fileNameModifier = fileNameModifier + 1;
-					        
 							// Check for saved file and parse if available
-					        
 					        if (checkForFile.exists()) {
 					        	String fileContent = fileManager.readFromFile(context, detailFileName);
 					        	if (!fileContent.isEmpty()) {
 					        		if (parseData(fileContent.toString(), "movieDetails")) {
 					        			
-					        			Log.i(tag, "Movie Details Parsed");
-					        			Log.i(tag, movieDetails.toString());
+//					        			Log.i(tag, "Movie Details Parsed");
+//					        			Log.i(tag, movieDetails.toString());
 					        			
+					        			// Loop through objects to pull correct data and pass to detail activity
 					        			for (int k = 0; k < movieDetails.size(); k++) {
 					        				if (movieDetails.get(k).detailTitle.toString()
 					        						.matches(movieList.get(position).movieName.toString())) {
 					        					
-					        					Log.i(tag, movieDetails.get(k)
-										        		.detailTitle.toString());
+/*					        					Log.i(tag, movieDetails.get(k)
+										        		.detailTitle.toString());*/
 					        					
-										        // Start Detail Activity
-					        					
+										        // Start Detail Activity with extras for detail activity UI
 										        Intent detailIntent = new Intent(context, DetailActivity.class);
 										        detailIntent.putExtra("title", movieDetails.get(k)
 										        		.detailTitle.toString());
@@ -184,7 +177,7 @@ public class MainActivity extends Activity {
 							+ getResources().getString(R.string.post_detail_api);
 					myURL = myURL.replace("_", "&");
 							
-					// Start intent service
+					// Start intent service with movie details url
 					Intent startApiIntent = new Intent(context, ApiService.class);
 					startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
 					startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
@@ -311,7 +304,12 @@ public class MainActivity extends Activity {
 	// User Notifications
 	private void showNotfication(String myNotification) {
     	
-    	// Set Alert Text based on Error
+    	/* Set Alert Text based on Error
+    	 * Input error shows if EditText is empty
+    	 * Connection error shows if there isn't a valid network connection
+    	 * Searching notification shows when the API service is called
+    	 * Details notification shows when detail activity is called
+    	 */
     	if (myNotification == "input") {
     		Toast.makeText(this, R.string.input_notification, Toast.LENGTH_LONG).show();
     	}
@@ -335,10 +333,8 @@ public class MainActivity extends Activity {
 			jsonString = apiData;
 		}
 
-//		String type = null;
 		// Parse JSON
 		if (apiType.matches("movieList")) {
-//			type = "movieList";
 			try {
 				// Creating JSONObject from String
 					JSONObject mainObject = new JSONObject(jsonString);
@@ -347,8 +343,8 @@ public class MainActivity extends Activity {
 
 					for (int i = 0; i < subObject.length(); i ++) {
 						JSONObject movieObject = subObject.getJSONObject(i);
-						// Class Specific Data
 						
+						// Class Specific Data
 						String thisName = movieObject.getString("Title");
 						String thisYear = movieObject.getString("Year");
 						String thisType = movieObject.getString("Type");
@@ -387,52 +383,53 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
+		
 		if (apiType.matches("movieDetails")) {
-//			type = "movieDetails";
 			try {
 				
 				// Creating JSONObject from String
-					JSONObject mainObject = new JSONObject(jsonString);
+				JSONObject mainObject = new JSONObject(jsonString);
 
-//					Log.i(tag, mainObject.toString());
-					
-						// Class Specific Data
-						String detailName = mainObject.getString("Title");
-						String detailYear = mainObject.getString("Year");
-						String detailRated = mainObject.getString("Rated");
-						String detailReleased = mainObject.getString("Released");
-						String detailRuntime = mainObject.getString("Runtime");
-						String detailGenre = mainObject.getString("Genre");
-						String detailDirector = mainObject.getString("Director");
-						String detailActors = mainObject.getString("Actors");
-						String detailPlot = mainObject.getString("Plot");
-						String detailAwards = mainObject.getString("Awards");
-						String detailImage = mainObject.getString("Poster");
-						String detailScore = mainObject.getString("Metascore");
-/*						Log.i(tag, detailName);
-						Log.i(tag, detailYear);
-						Log.i(tag, detailRated);
-						Log.i(tag, detailReleased);
-						Log.i(tag, detailRuntime);
-						Log.i(tag, detailGenre);
-						Log.i(tag, detailDirector);
-						Log.i(tag, detailActors);
-						Log.i(tag, detailPlot);
-						Log.i(tag, detailAwards);
-						Log.i(tag, detailImage);
-						Log.i(tag, detailScore);*/
-						
-						// Not Applicable
-						String thisName = na;
-						String thisYear = na;
-						String thisType = na;
-						String thisID = na;
+//				Log.i(tag, mainObject.toString());
 
-						// Save Data Here
-						setClass(apiType, thisName, thisYear, thisType, thisID, detailName, detailYear, detailRated
-								, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
-								, detailPlot, detailAwards, detailImage, detailScore);
-					completed = true;
+				// Class Specific Data
+				String detailName = mainObject.getString("Title");
+				String detailYear = mainObject.getString("Year");
+				String detailRated = mainObject.getString("Rated");
+				String detailReleased = mainObject.getString("Released");
+				String detailRuntime = mainObject.getString("Runtime");
+				String detailGenre = mainObject.getString("Genre");
+				String detailDirector = mainObject.getString("Director");
+				String detailActors = mainObject.getString("Actors");
+				String detailPlot = mainObject.getString("Plot");
+				String detailAwards = mainObject.getString("Awards");
+				String detailImage = mainObject.getString("Poster");
+				String detailScore = mainObject.getString("Metascore");
+				
+/*				Log.i(tag, detailName);
+				Log.i(tag, detailYear);
+				Log.i(tag, detailRated);
+				Log.i(tag, detailReleased);
+				Log.i(tag, detailRuntime);
+				Log.i(tag, detailGenre);
+				Log.i(tag, detailDirector);
+				Log.i(tag, detailActors);
+				Log.i(tag, detailPlot);
+				Log.i(tag, detailAwards);
+				Log.i(tag, detailImage);
+				Log.i(tag, detailScore);*/
+
+				// Not Applicable
+				String thisName = na;
+				String thisYear = na;
+				String thisType = na;
+				String thisID = na;
+
+				// Save Data Here
+				setClass(apiType, thisName, thisYear, thisType, thisID, detailName, detailYear, detailRated
+						, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
+						, detailPlot, detailAwards, detailImage, detailScore);
+				completed = true;
 			} 
 			catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -466,7 +463,7 @@ public class MainActivity extends Activity {
 
 	}
 	
-    // Check Network Connection Method
+    // Check Network Connection Method and return false if there is no valid network connection
     public Boolean checkNetworkConnection (Context context) {
     	Boolean connected = false;
     	ConnectivityManager connManag = (ConnectivityManager) MainActivity.context
@@ -514,6 +511,7 @@ public class MainActivity extends Activity {
 		}
     }
     
+    // onActivityResult is called when detail activity is closed and displays alert dialog with favorite information
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	Log.i(tag, "onActivityResult has been called");
     	
@@ -525,6 +523,7 @@ public class MainActivity extends Activity {
     			
     			Log.i(tag, "Extras are not null");
     			
+    			// Get data and construct dialog
     			String title = data.getStringExtra("title");
     			Float favValue = data.getFloatExtra("fav", 0);
 

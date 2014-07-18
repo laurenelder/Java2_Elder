@@ -1,5 +1,14 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 17, 2014
+ * Class:			Java 2 Term 1407
+ */
+
 package com.laurenelder.movielookup;
 
+// Movie Detail Object to be used to populate detail activity UI elements
 public class MovieDetails {
 	
 	String detailTitle;

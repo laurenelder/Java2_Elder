@@ -2,7 +2,7 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 9, 2014
+ * Date:			Jul 17, 2014
  * Class:			Java 2 Term 1407
  */
 
@@ -10,7 +10,6 @@ package com.laurenelder.movielookup;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -46,6 +45,7 @@ public class ApiService extends IntentService {
 		Message message = Message.obtain();
 		message.arg1 = Activity.RESULT_OK;
 		
+		// Fetch API Data and format inputStream to String
     	String apiResponse = "";
     	
     	try {
@@ -76,15 +76,5 @@ public class ApiService extends IntentService {
 			e.printStackTrace();
 		}
     	Log.i(tag, apiResponse.toString());
-		
-/*		// Call apiManager for API call
-		message.obj = ApiManager.getData(url.toString()).toString();
-		try {
-			theMessenger.send(message);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e(tag, e.getMessage().toString());
-		}*/
 	}
 }

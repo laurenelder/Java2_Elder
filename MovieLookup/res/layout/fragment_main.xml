@@ -8,4 +8,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.laurenelder.movielookup.MainActivity$PlaceholderFragment" >
 
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="com.laurenelder.movielookup.MainFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="133dp" />
+
 </RelativeLayout>

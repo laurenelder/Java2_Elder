@@ -25,12 +25,13 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08001b;
+        public static final int action_settings=0x7f08001c;
         public static final int actorLabel=0x7f080014;
         public static final int awardsLabel=0x7f080016;
         public static final int container=0x7f080000;
         public static final int directorLabel=0x7f08000e;
         public static final int findButton=0x7f080003;
+        public static final int fragment1=0x7f08001b;
         public static final int genreLabel=0x7f080012;
         public static final int imageHint=0x7f080008;
         public static final int list=0x7f080004;

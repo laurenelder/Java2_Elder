@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 	String externalFileName;
 	static Handler apiHandler = null;
 	boolean detailApi = false;
+	boolean dataAvailable = false;
 	String myURL;
 	String na;
 	
@@ -94,173 +95,18 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					final int position, long id) {
 				
-				// Load Movie Details UI here
-				apiHandler = new Handler() {
-
-					@Override
-					public void handleMessage(Message msg) {
-						// TODO Auto-generated method stub
-						if (msg.arg1 == RESULT_OK) {
-							
-							// Write to internal file and disable button to prevent further api calls
-//							Log.i(tag, msg.obj.toString());
-				       
-					        String detailFileName = movieList.get(position).movieName.toString() + 
-					        	getResources().getString(R.string.detail_file_name);
-					        
-					        // Check for file (if true doesn't write to file)
-					        File checkForFile = getBaseContext().getFileStreamPath(detailFileName);
-					        if (!checkForFile.exists()) {
-					        	fileManager.writeToFile(context, detailFileName, msg.obj.toString());
-					        }
-					        
-							// Check for saved file and parse if available
-					        if (checkForFile.exists()) {
-					        	String fileContent = fileManager.readFromFile(context, detailFileName);
-					        	if (!fileContent.isEmpty()) {
-					        		if (parseData(fileContent.toString(), "movieDetails")) {
-					        			
-//					        			Log.i(tag, "Movie Details Parsed");
-//					        			Log.i(tag, movieDetails.toString());
-					        			
-					        			// Loop through objects to pull correct data and pass to detail activity
-					        			for (int k = 0; k < movieDetails.size(); k++) {
-					        				if (movieDetails.get(k).detailTitle.toString()
-					        						.matches(movieList.get(position).movieName.toString())) {
-					        					
-/*					        					Log.i(tag, movieDetails.get(k)
-										        		.detailTitle.toString());*/
-					        					
-										        // Start Detail Activity with extras for detail activity UI
-										        Intent detailIntent = new Intent(context, DetailActivity.class);
-										        detailIntent.putExtra("title", movieDetails.get(k)
-										        		.detailTitle.toString());
-										        detailIntent.putExtra("year", movieDetails.get(k)
-										        		.detailYear.toString());
-										        detailIntent.putExtra("rated", movieDetails.get(k)
-										        		.detailRated.toString());
-										        detailIntent.putExtra("released", movieDetails.get(k)
-										        		.detailReleased.toString());
-										        detailIntent.putExtra("runtime", movieDetails.get(k)
-										        		.detailRuntime.toString());
-										        detailIntent.putExtra("genre", movieDetails.get(k)
-										        		.detailGenre.toString());
-										        detailIntent.putExtra("director", movieDetails.get(k)
-										        		.detailDirector.toString());
-										        detailIntent.putExtra("actors", movieDetails.get(k)
-										        		.detailActors.toString());
-										        detailIntent.putExtra("plot", movieDetails.get(k)
-										        		.detailPlot.toString());
-										        detailIntent.putExtra("awards", movieDetails.get(k)
-										        		.detailAwards.toString());
-										        detailIntent.putExtra("image", movieDetails.get(k)
-										        		.detailImage.toString());
-										        detailIntent.putExtra("score", movieDetails.get(k)
-										        		.detailScore.toString());
-										        startActivityForResult(detailIntent, 0);
-					        				}
-					        			}
-					        		}
-					        	}
-					        }
-						}
-					}
-				};
-				
-				// Network connection check
-				if (checkNetworkConnection(context)) {
-					// Set boolean to determine parse method details
-					Messenger apiMessenger = new Messenger(apiHandler);
-						
-					// Properly format URL
-					myURL = getResources().getString(R.string.pre_detail_api) + movieList.get(position).movieID.toString()
-							+ getResources().getString(R.string.post_detail_api);
-					myURL = myURL.replace("_", "&");
-							
-					// Start intent service with movie details url
-					Intent startApiIntent = new Intent(context, ApiService.class);
-					startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
-					startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
-					startService(startApiIntent);
-					showNotfication("details");
-				} else {
-					showNotfication("connection");
-				}
+				onListViewClick(position);
 			}
-
 		});
-        
-		// Check for saved file and parse if available
-        File checkForFile = getBaseContext().getFileStreamPath(externalFileName);
-        if (checkForFile.exists()) {
-        	findButton.setEnabled(false);
-        	String fileContent = fileManager.readFromFile(context, externalFileName);
-//        	Log.i(tag, fileContent.toString());
-        	if (!fileContent.isEmpty()) {
-        		parseData(fileContent.toString(), "movieList");
-        	}
-        	for (Integer q = 0; q < 10; q++) {
-        		String detailFileName = q.toString() + getResources().getString(R.string.detail_file_name);
-        		File checkForDetailsFile = getBaseContext().getFileStreamPath(detailFileName);
-        		if (checkForDetailsFile.exists()) {
-        			String detailFileContent = fileManager.readFromFile(context, detailFileName);
-        			if (!detailFileContent.isEmpty()) {
-        				parseData(detailFileContent.toString(), "movieDetails");
-        			}
-        		}
-        	}
-        } else {
-        	findButton.setEnabled(true);
-        }
+		
+		onFileCheck();
         
         findButton.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (searchField.getText().toString().matches("")) {
-					showNotfication("input");
-				} else {
-					
-					// apiService Intent, Handler, and Start
-					apiHandler = new Handler() {
-
-						@Override
-						public void handleMessage(Message msg) {
-							// TODO Auto-generated method stub
-							if (msg.arg1 == RESULT_OK) {
-								
-								// Write to internal file and disable button to prevent further api calls
-//								Log.i(tag, msg.obj.toString());
-					        	findButton.setEnabled(false);
-					        	
-					        	// Read and parse date from internal file
-					        	fileManager.writeToFile(context, externalFileName, msg.obj.toString());
-					        	String fileContent = fileManager.readFromFile(context, externalFileName);
-					        	parseData(fileContent.toString(), "movieList");
-							}
-						}
-					};
-					
-					// Network connection check
-					if (checkNetworkConnection(context)) {
-						// Set boolean to determine parse method details
-						Messenger apiMessenger = new Messenger(apiHandler);
-							
-						// Properly format URL
-						myURL = getResources().getString(R.string.main_api);
-						myURL = myURL.replace("_", "&");
-								
-						// Start intent service
-						Intent startApiIntent = new Intent(context, ApiService.class);
-						startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
-						startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
-						startService(startApiIntent);
-						showNotfication("searching");
-					} else {
-						showNotfication("connection");
-					}
-				}
+				onButtonClick(searchField.getText().toString());
 			}
         });
     }
@@ -300,6 +146,201 @@ public class MainActivity extends Activity {
             return rootView;
         }
     }
+    
+    /* OnFileCheck method checks to see if local file is available and returns boolean depending on if
+     * it is available or not... This boolean is then used in the fragment class to the "clickable" attribute
+     * of the search button... If file is available the parse method is then called.
+     */
+    
+    public boolean onFileCheck() {
+    	boolean fileAvailable = false;
+    	
+		// Check for saved file and parse if available
+        File checkForFile = getBaseContext().getFileStreamPath(externalFileName);
+        if (checkForFile.exists()) {
+        	findButton.setEnabled(false);
+        	String fileContent = fileManager.readFromFile(context, externalFileName);
+//        	Log.i(tag, fileContent.toString());
+        	if (!fileContent.isEmpty()) {
+        		parseData(fileContent.toString(), "movieList");
+        	}
+        	for (Integer q = 0; q < 10; q++) {
+        		String detailFileName = q.toString() + getResources().getString(R.string.detail_file_name);
+        		File checkForDetailsFile = getBaseContext().getFileStreamPath(detailFileName);
+        		if (checkForDetailsFile.exists()) {
+        			String detailFileContent = fileManager.readFromFile(context, detailFileName);
+        			if (!detailFileContent.isEmpty()) {
+        				parseData(detailFileContent.toString(), "movieDetails");
+        			}
+        		}
+        	}
+        	
+        	fileAvailable = true;
+        	
+        } else {
+        	findButton.setEnabled(true);
+        	fileAvailable = false;
+        }
+        
+        return fileAvailable;
+    }
+    
+	/* OnListViewClick method handles click events from the fragment by running API service 
+	 * and fileManager Class... After all code is completed without errors the detail activity is
+	 * then started.
+	 */
+	public void onListViewClick(final int position) {
+		// Load Movie Details UI here
+		apiHandler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				// TODO Auto-generated method stub
+				if (msg.arg1 == RESULT_OK) {
+					
+					// Write to internal file and disable button to prevent further api calls
+//					Log.i(tag, msg.obj.toString());
+		       
+			        String detailFileName = movieList.get(position).movieName.toString() + 
+			        	getResources().getString(R.string.detail_file_name);
+			        
+			        // Check for file (if true doesn't write to file)
+			        File checkForFile = getBaseContext().getFileStreamPath(detailFileName);
+			        if (!checkForFile.exists()) {
+			        	fileManager.writeToFile(context, detailFileName, msg.obj.toString());
+			        }
+			        
+					// Check for saved file and parse if available
+			        if (checkForFile.exists()) {
+			        	String fileContent = fileManager.readFromFile(context, detailFileName);
+			        	if (!fileContent.isEmpty()) {
+			        		if (parseData(fileContent.toString(), "movieDetails")) {
+			        			
+//			        			Log.i(tag, "Movie Details Parsed");
+//			        			Log.i(tag, movieDetails.toString());
+			        			
+			        			// Loop through objects to pull correct data and pass to detail activity
+			        			for (int k = 0; k < movieDetails.size(); k++) {
+			        				if (movieDetails.get(k).detailTitle.toString()
+			        						.matches(movieList.get(position).movieName.toString())) {
+			        					
+/*					        					Log.i(tag, movieDetails.get(k)
+								        		.detailTitle.toString());*/
+			        					
+								        // Start Detail Activity with extras for detail activity UI
+								        Intent detailIntent = new Intent(context, DetailActivity.class);
+								        detailIntent.putExtra("title", movieDetails.get(k)
+								        		.detailTitle.toString());
+								        detailIntent.putExtra("year", movieDetails.get(k)
+								        		.detailYear.toString());
+								        detailIntent.putExtra("rated", movieDetails.get(k)
+								        		.detailRated.toString());
+								        detailIntent.putExtra("released", movieDetails.get(k)
+								        		.detailReleased.toString());
+								        detailIntent.putExtra("runtime", movieDetails.get(k)
+								        		.detailRuntime.toString());
+								        detailIntent.putExtra("genre", movieDetails.get(k)
+								        		.detailGenre.toString());
+								        detailIntent.putExtra("director", movieDetails.get(k)
+								        		.detailDirector.toString());
+								        detailIntent.putExtra("actors", movieDetails.get(k)
+								        		.detailActors.toString());
+								        detailIntent.putExtra("plot", movieDetails.get(k)
+								        		.detailPlot.toString());
+								        detailIntent.putExtra("awards", movieDetails.get(k)
+								        		.detailAwards.toString());
+								        detailIntent.putExtra("image", movieDetails.get(k)
+								        		.detailImage.toString());
+								        detailIntent.putExtra("score", movieDetails.get(k)
+								        		.detailScore.toString());
+								        startActivityForResult(detailIntent, 0);
+			        				}
+			        			}
+			        		}
+			        	}
+			        }
+				}
+			}
+		};
+		
+		// Network connection check
+		if (checkNetworkConnection(context)) {
+			// Set boolean to determine parse method details
+			Messenger apiMessenger = new Messenger(apiHandler);
+				
+			// Properly format URL
+			myURL = getResources().getString(R.string.pre_detail_api) + movieList.get(position).movieID.toString()
+					+ getResources().getString(R.string.post_detail_api);
+			myURL = myURL.replace("_", "&");
+					
+			// Start intent service with movie details url
+			Intent startApiIntent = new Intent(context, ApiService.class);
+			startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
+			startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
+			startService(startApiIntent);
+			showNotfication("details");
+		} else {
+			showNotfication("connection");
+		}
+	}
+	
+	/* OnButtonClick method runs when the search button is clicked and is called from the mainFragment...
+	 * This method runs the API service, writes the results to a local file, reads the local file, and
+	 * calls the parse method to save the data to a custom object class. This method also returns a boolean
+	 * so the search button attribute "clickable" can be set when the data is saved to local file.
+	 */
+	
+	public boolean onButtonClick(String inputSTR) {
+		
+		dataAvailable = false;
+		
+		if (inputSTR.matches("")) {
+			showNotfication("input");
+		} else {
+			
+			// apiService Intent, Handler, and Start
+			apiHandler = new Handler() {
+
+				@Override
+				public void handleMessage(Message msg) {
+					// TODO Auto-generated method stub
+					if (msg.arg1 == RESULT_OK) {
+						
+						// Write to internal file and disable button to prevent further api calls
+//						Log.i(tag, msg.obj.toString());
+			        	findButton.setEnabled(false);
+			        	dataAvailable = true;
+			        	
+			        	// Read and parse date from internal file
+			        	fileManager.writeToFile(context, externalFileName, msg.obj.toString());
+			        	String fileContent = fileManager.readFromFile(context, externalFileName);
+			        	parseData(fileContent.toString(), "movieList");
+					}
+				}
+			};
+			
+			// Network connection check
+			if (checkNetworkConnection(context)) {
+				// Set boolean to determine parse method details
+				Messenger apiMessenger = new Messenger(apiHandler);
+					
+				// Properly format URL
+				myURL = getResources().getString(R.string.main_api);
+				myURL = myURL.replace("_", "&");
+						
+				// Start intent service
+				Intent startApiIntent = new Intent(context, ApiService.class);
+				startApiIntent.putExtra(ApiService.MESSENGER_KEY, apiMessenger);
+				startApiIntent.putExtra(ApiService.INPUT_KEY, myURL);
+				startService(startApiIntent);
+				showNotfication("searching");
+			} else {
+				showNotfication("connection");
+			}
+		}
+		
+		return dataAvailable;
+	}
     
 	// User Notifications
 	private void showNotfication(String myNotification) {

@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -28,38 +29,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements MainFragment.OnSelected {
 	
 	// Global Variables
 	FileManager fileManager;
 	static String tag = "MAINACTIVITY";
-	EditText searchField;
-	Button findButton;
 	static Context context;
 	String externalFileName;
 	static Handler apiHandler = null;
 	boolean detailApi = false;
 	boolean dataAvailable = false;
+	FragmentManager fragManag;
+	MainFragment frag;
 	String myURL;
 	String na;
-	
-	// Array Adapter for ListView
-	ArrayAdapter<MovieListItems> listAdapter;
 	
 	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
@@ -68,7 +55,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_main);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -79,36 +66,19 @@ public class MainActivity extends Activity {
         // Set Variables after UI has Loaded
         context = this;
         fileManager = FileManager.getInstance();
-        searchField = (EditText)findViewById(R.id.searchField);
-        findButton = (Button)findViewById(R.id.findButton);
         externalFileName = getResources().getString(R.string.file_name);
         na = getResources().getString(R.string.n_a);
-        
-        // ListView Adapter Code 
-		listAdapter = new customListAdapter();
-        ListView listView = (ListView)findViewById(R.id.list);
-		listView.setAdapter(listAdapter);
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			// Handle onClick for list items
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					final int position, long id) {
-				
-				onListViewClick(position);
-			}
-		});
 		
+//		onFileCheck();
+		fragManag = getFragmentManager();
+		frag = (MainFragment)fragManag.findFragmentById(R.id.fragment1);
+		if(frag == null) {
+			frag = new MainFragment();
+		}
+/*		if (onFileCheck()) {
+			frag.setButton(false);
+		}*/
 		onFileCheck();
-        
-        findButton.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onButtonClick(searchField.getText().toString());
-			}
-        });
     }
 
     @Override
@@ -139,12 +109,12 @@ public class MainActivity extends Activity {
         public PlaceholderFragment() {
         }
 
-        @Override
+/*        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.activity_main, container, false);
             return rootView;
-        }
+        }*/
     }
     
     /* OnFileCheck method checks to see if local file is available and returns boolean depending on if
@@ -158,9 +128,9 @@ public class MainActivity extends Activity {
 		// Check for saved file and parse if available
         File checkForFile = getBaseContext().getFileStreamPath(externalFileName);
         if (checkForFile.exists()) {
-        	findButton.setEnabled(false);
+//        	findButton.setEnabled(false);
         	String fileContent = fileManager.readFromFile(context, externalFileName);
-//        	Log.i(tag, fileContent.toString());
+        	Log.i(tag, "File Check is Running");
         	if (!fileContent.isEmpty()) {
         		parseData(fileContent.toString(), "movieList");
         	}
@@ -170,15 +140,15 @@ public class MainActivity extends Activity {
         		if (checkForDetailsFile.exists()) {
         			String detailFileContent = fileManager.readFromFile(context, detailFileName);
         			if (!detailFileContent.isEmpty()) {
-        				parseData(detailFileContent.toString(), "movieDetails");
+        				if(parseData(detailFileContent.toString(), "movieDetails")) {
+        					fileAvailable = true;
+        				}
         			}
         		}
         	}
-        	
-        	fileAvailable = true;
-        	
+        	frag.setButtonFalse();
         } else {
-        	findButton.setEnabled(true);
+//        	findButton.setEnabled(true);
         	fileAvailable = false;
         }
         
@@ -308,13 +278,12 @@ public class MainActivity extends Activity {
 						
 						// Write to internal file and disable button to prevent further api calls
 //						Log.i(tag, msg.obj.toString());
-			        	findButton.setEnabled(false);
+//			        	findButton.setEnabled(false);
 			        	dataAvailable = true;
 			        	
 			        	// Read and parse date from internal file
 			        	fileManager.writeToFile(context, externalFileName, msg.obj.toString());
-			        	String fileContent = fileManager.readFromFile(context, externalFileName);
-			        	parseData(fileContent.toString(), "movieList");
+			        	onFileCheck();
 					}
 				}
 			};
@@ -414,7 +383,7 @@ public class MainActivity extends Activity {
 								, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
 								, detailPlot, detailAwards, detailImage, detailScore);
 					}
-					listAdapter.notifyDataSetChanged();
+//					listAdapter.notifyDataSetChanged();
 					completed = true;
 			} 
 			catch (JSONException e) {
@@ -489,6 +458,7 @@ public class MainActivity extends Activity {
 		if (type.matches("movieList")) {
 			MovieListItems newMovie = new MovieListItems(name, year, movieType, ID);
 			movieList.add(newMovie);
+			frag.setObjects(name, year, movieType, ID);
 //			Log.i(tag, ID.toString());
 //			Log.i(tag, movieList.get(0).movieID.toString());
 //			Log.i(tag, newMovie.toString());
@@ -519,37 +489,6 @@ public class MainActivity extends Activity {
     		}
     	}
     	return connected;
-    }
-    
-    // Custom ListAdapter Class
-    public class customListAdapter extends ArrayAdapter <MovieListItems> {
-    	public customListAdapter() {
-    		super(context, R.layout.custom_list_item, movieList);
-    	}
-
-    	// Set List Item Information
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View customItemView = convertView;
-		
-//			Log.i(tag, "Custom Adapter Hit");
-
-			if (customItemView == null) {
-				LayoutInflater viewInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				customItemView = viewInflater.inflate(R.layout.custom_list_item, parent, false);
-			}
-
-			// Set Values for UI elements in custom cell
-			TextView name = (TextView)customItemView.findViewById(R.id.movieTitle);
-			TextView year = (TextView)customItemView.findViewById(R.id.movieYear);
-			TextView type = (TextView)customItemView.findViewById(R.id.movieType);
-
-			name.setText(movieList.get(position).movieName.toString());
-			year.setText(movieList.get(position).movieYear.toString());
-			type.setText(movieList.get(position).movieType.toString());
-
-			return customItemView;
-		}
     }
     
     // onActivityResult is called when detail activity is closed and displays alert dialog with favorite information

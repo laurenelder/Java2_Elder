@@ -51,5 +51,6 @@
 <fullyQualifiedTypeName name="android.app.AlertDialog"/>
 <fullyQualifiedTypeName name="com.laurenelder.movielookup.R.string"/>
 <fullyQualifiedTypeName name="android.widget.RatingBar"/>
+<fullyQualifiedTypeName name="android.app.Fragment"/>
 <fullyQualifiedTypeName name="com.laurenelder.movielookup.R.id"/>
 </qualifiedTypeNameHistroy>

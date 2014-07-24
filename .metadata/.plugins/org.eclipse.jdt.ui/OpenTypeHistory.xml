@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <typeInfoHistroy>
-<typeInfo handle="=MovieLookup/src&lt;com.laurenelder.movielookup{ApiService.java[ApiService" modifiers="1" timestamp="1405478543000"/>
+<typeInfo handle="=MovieLookup/src&lt;com.laurenelder.movielookup{ApiService.java[ApiService" modifiers="1" timestamp="1405643624000"/>
 <typeInfo handle="=MovieLookup/\/Users\/devinelder\/Development\/adt-bundle-mac-x86_64-20130522\/sdk\/platforms\/android-19\/android.jar&lt;android.app(Activity.class[Activity" modifiers="33" timestamp="1400093025000"/>
-<typeInfo handle="=MovieLookup/src&lt;com.laurenelder.movielookup{DetailActivity.java[DetailActivity" modifiers="1" timestamp="1405623106000"/>
+<typeInfo handle="=MovieLookup/src&lt;com.laurenelder.movielookup{DetailActivity.java[DetailActivity" modifiers="1" timestamp="1405643238000"/>
+<typeInfo handle="=MovieLookup/src&lt;com.laurenelder.movielookup{MainFragment.java[MainFragment" modifiers="1" timestamp="1406156235000"/>
 </typeInfoHistroy>

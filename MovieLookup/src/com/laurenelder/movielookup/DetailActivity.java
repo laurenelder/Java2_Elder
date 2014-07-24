@@ -8,28 +8,22 @@
 
 package com.laurenelder.movielookup;
 
-import java.io.InputStream;
+import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.RatingBar.OnRatingBarChangeListener;
-import android.widget.TextView;
 
-public class DetailActivity extends Activity {
+public class DetailActivity extends Activity implements DetailsFragment.OnSelected{
 	
 	// Set Global Variables
 	static String tag = "DETAILSACTIVITY";
-	ImageView image;
+	FragmentManager fragDetailManag;
+	DetailsFragment DetailFrag;
+/*	ImageView image;
 	TextView titleTxt;
 	TextView yearTxt;
 	TextView directorTxt;
@@ -40,7 +34,7 @@ public class DetailActivity extends Activity {
 	TextView awardTxt;
 	TextView scoreTxt;
 	TextView plotTxt;
-	RatingBar rBar;
+	RatingBar rBar;*/
 	Bitmap moviePoster;
 	Intent intent;
 	
@@ -61,12 +55,25 @@ public class DetailActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		setContentView(R.layout.detail_layout);
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.fragment_details);
+		
+		
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new PlaceholderFragment())
+                    .commit();
+        }
 		
 		intent = this.getIntent();
 		
-		// Set UI Elements to variables
+		fragDetailManag = getFragmentManager();
+		DetailFrag = (DetailsFragment)fragDetailManag.findFragmentById(R.id.fragment2);
+		if(DetailFrag == null) {
+			DetailFrag = new DetailsFragment();
+		}
+		
+/*		// Set UI Elements to variables
 		titleTxt = (TextView)findViewById(R.id.movieTitle);
 		yearTxt = (TextView)findViewById(R.id.movieYear);
 		directorTxt = (TextView)findViewById(R.id.movieDirector);
@@ -78,12 +85,12 @@ public class DetailActivity extends Activity {
 		scoreTxt = (TextView)findViewById(R.id.movieScore);
 		plotTxt = (TextView)findViewById(R.id.moviePlot);
 		image = (ImageView)findViewById(R.id.movieImage);
-		rBar = (RatingBar)findViewById(R.id.ratingBar);
+		rBar = (RatingBar)findViewById(R.id.ratingBar);*/
 		
 		// Get all extras from intent and set to global variables
 		TITLE = intent.getExtras().getString("title");
 		IMAGEURL = intent.getExtras().getString("image");
-		FAV = rBar.getRating();
+		FAV = (float) 0.0;
 		YEAR = intent.getExtras().getString("year");
 		DIRECTOR = intent.getExtras().getString("director");
 		RATED = intent.getExtras().getString("rated");
@@ -94,10 +101,10 @@ public class DetailActivity extends Activity {
 		SCORE = intent.getExtras().getString("score");
 		PLOT = intent.getExtras().getString("plot");
 		
-		// Call Async Task to load movie image
-		new downloadImage().execute(IMAGEURL);
+/*		// Call Async Task to load movie image
+		new downloadImage().execute(IMAGEURL);*/
 		
-		// Set UI elements from global variables
+/*		// Set UI elements from global variables
 		titleTxt.setText(TITLE);
 		yearTxt.setText(YEAR);
 		directorTxt.setText(DIRECTOR);
@@ -134,10 +141,24 @@ public class DetailActivity extends Activity {
 				Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
 				startActivity(websiteIntent);
 			}
-		});
+		});*/
+		
+
+		DetailFrag.getStoredData(TITLE, YEAR, DIRECTOR, RATED, RUNTIME, 
+				GENRE, ACTORS, AWARDS, SCORE, PLOT, IMAGEURL);
+	}
+	
+	public void setRating(float myRating) {
+		FAV = myRating;
+	}
+	
+	public void onClickImage() {
+		Uri website = Uri.parse(IMAGEURL);
+		Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+		startActivity(websiteIntent);
 	}
 
-	// Async Task to fetch image from url and set ImageView on post execute
+/*	// Async Task to fetch image from url and set ImageView on post execute
 	private class downloadImage extends AsyncTask<String, Void, Bitmap> {
 
 		protected Bitmap doInBackground(String... urls) {
@@ -156,7 +177,7 @@ public class DetailActivity extends Activity {
 		protected void onPostExecute(Bitmap result) {
 			image.setImageBitmap(result);
 		}
-	} 
+	} */
 	
 	/* Override methods
 	 * Finish method to pass favorite data back to main activity
@@ -168,7 +189,7 @@ public class DetailActivity extends Activity {
 	  // Prepare data intent 
 	  Intent data = new Intent();
 	  data.putExtra("fav", FAV);
-	  data.putExtra("title", titleTxt.getText().toString());
+	  data.putExtra("title", TITLE);
 	  setResult(RESULT_OK, data);
 	  super.finish();
 	} 

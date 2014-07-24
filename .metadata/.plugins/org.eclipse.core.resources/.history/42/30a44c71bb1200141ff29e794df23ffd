@@ -1,0 +1,120 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 23, 2014
+ * Class:			Java 2 Term 1407
+ */
+
+package com.laurenelder.movielookup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.laurenelder.movielookup.MainActivity.customListAdapter;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
+
+public class MainFragment extends Fragment{
+	
+	EditText searchField;
+	Button findButton;
+	static Context context;
+	
+	// Class List to access movieList Objects
+	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
+	List<MovieDetails> movieDetails = new ArrayList<MovieDetails>();
+
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		
+		View view = inflater.inflate(R.layout.activity_main, container);
+		
+        searchField = (EditText)view.findViewById(R.id.searchField);
+        findButton = (Button)view.findViewById(R.id.findButton);
+        
+    	// Array Adapter for ListView
+    	ArrayAdapter<MovieListItems> listAdapter;
+        
+        // ListView Adapter Code 
+		listAdapter = new customListAdapter();
+        ListView listView = (ListView)view.findViewById(R.id.list);
+		listView.setAdapter(listAdapter);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			// Handle onClick for list items
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					final int position, long id) {
+				
+				onListViewClick(position);
+			}
+		});
+		
+        findButton.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				onButtonClick(searchField.getText().toString());
+			}
+        });
+		
+		return view;
+//		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+	
+    // Custom ListAdapter Class
+    public class customListAdapter extends ArrayAdapter <MovieListItems> {
+    	public customListAdapter() {
+    		super(context, R.layout.custom_list_item, movieList);
+    	}
+
+    	// Set List Item Information
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View customItemView = convertView;
+		
+//			Log.i(tag, "Custom Adapter Hit");
+
+			if (customItemView == null) {
+				LayoutInflater viewInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				customItemView = viewInflater.inflate(R.layout.custom_list_item, parent, false);
+			}
+
+			// Set Values for UI elements in custom cell
+			TextView name = (TextView)customItemView.findViewById(R.id.movieTitle);
+			TextView year = (TextView)customItemView.findViewById(R.id.movieYear);
+			TextView type = (TextView)customItemView.findViewById(R.id.movieType);
+
+			name.setText(movieList.get(position).movieName.toString());
+			year.setText(movieList.get(position).movieYear.toString());
+			type.setText(movieList.get(position).movieType.toString());
+
+			return customItemView;
+		}
+    }
+
+}

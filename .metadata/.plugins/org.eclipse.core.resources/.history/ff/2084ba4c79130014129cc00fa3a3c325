@@ -1,0 +1,62 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 23, 2014
+ * Class:			Java 2 Term 1407
+ */
+package com.laurenelder.movielookup;
+
+import com.laurenelder.movielookup.MainFragment.OnSelected;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
+
+public class DetailsFragment extends Fragment implements OnRatingBarChangeListener{
+	
+	static Context context;
+	
+	public interface OnSelected {
+		public void setRating(float myRating);
+	}
+	
+	private OnSelected parentActivity;
+
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		context = getActivity();
+		
+		if(activity instanceof OnSelected) {
+			parentActivity = (OnSelected) activity;
+
+		} else {
+			throw new ClassCastException((activity.toString()) + "Did not impliment onSelected interface");
+		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		
+		View view = inflater.inflate(R.layout.detail_layout, container);
+		return view;
+	}
+
+	@Override
+	public void onRatingChanged(RatingBar ratingBar, float rating,
+			boolean fromUser) {
+		// TODO Auto-generated method stub
+		parentActivity.setRating(rating);
+	}
+
+}

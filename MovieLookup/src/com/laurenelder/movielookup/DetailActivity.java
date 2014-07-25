@@ -2,13 +2,12 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 17, 2014
+ * Date:			Jul 24, 2014
  * Class:			Java 2 Term 1407
  */
 
-package com.laurenelder.movielookup;
 
-import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
+package com.laurenelder.movielookup;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -17,24 +16,14 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
+
 public class DetailActivity extends Activity implements DetailsFragment.OnSelected{
 	
 	// Set Global Variables
 	static String tag = "DETAILSACTIVITY";
 	FragmentManager fragDetailManag;
 	DetailsFragment DetailFrag;
-/*	ImageView image;
-	TextView titleTxt;
-	TextView yearTxt;
-	TextView directorTxt;
-	TextView ratedTxt;
-	TextView runtimeTxt;
-	TextView genreTxt;
-	TextView actorTxt;
-	TextView awardTxt;
-	TextView scoreTxt;
-	TextView plotTxt;
-	RatingBar rBar;*/
 	Bitmap moviePoster;
 	Intent intent;
 	
@@ -56,8 +45,8 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		// Load Details Fragment
 		setContentView(R.layout.fragment_details);
-		
 		
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -67,25 +56,12 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 		
 		intent = this.getIntent();
 		
+		// Initialize Fragment manager to call method in Fragment
 		fragDetailManag = getFragmentManager();
 		DetailFrag = (DetailsFragment)fragDetailManag.findFragmentById(R.id.fragment2);
 		if(DetailFrag == null) {
 			DetailFrag = new DetailsFragment();
 		}
-		
-/*		// Set UI Elements to variables
-		titleTxt = (TextView)findViewById(R.id.movieTitle);
-		yearTxt = (TextView)findViewById(R.id.movieYear);
-		directorTxt = (TextView)findViewById(R.id.movieDirector);
-		ratedTxt = (TextView)findViewById(R.id.movieRating);
-		runtimeTxt = (TextView)findViewById(R.id.movieRuntime);
-		genreTxt = (TextView)findViewById(R.id.movieGenre);
-		actorTxt = (TextView)findViewById(R.id.movieActor);
-		awardTxt = (TextView)findViewById(R.id.movieAwards);
-		scoreTxt = (TextView)findViewById(R.id.movieScore);
-		plotTxt = (TextView)findViewById(R.id.moviePlot);
-		image = (ImageView)findViewById(R.id.movieImage);
-		rBar = (RatingBar)findViewById(R.id.ratingBar);*/
 		
 		// Get all extras from intent and set to global variables
 		TITLE = intent.getExtras().getString("title");
@@ -101,84 +77,29 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 		SCORE = intent.getExtras().getString("score");
 		PLOT = intent.getExtras().getString("plot");
 		
-/*		// Call Async Task to load movie image
-		new downloadImage().execute(IMAGEURL);*/
-		
-/*		// Set UI elements from global variables
-		titleTxt.setText(TITLE);
-		yearTxt.setText(YEAR);
-		directorTxt.setText(DIRECTOR);
-		ratedTxt.setText(RATED);
-		runtimeTxt.setText(RUNTIME);
-		genreTxt.setText(GENRE);
-		actorTxt.setText(ACTORS);
-		awardTxt.setText(AWARDS);
-		scoreTxt.setText(SCORE);
-		plotTxt.setText(PLOT);
-		
-		// Set OnChangeListener for rating bar
-		rBar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
-
-			@Override
-			public void onRatingChanged(RatingBar ratingBar, float rating,
-					boolean fromUser) {
-				// TODO Auto-generated method stub
-				
-				// Set Global variable when the rating bar is selected
-				FAV = rBar.getRating();
-			}
-			
-		});
-		
-		// Set OnClickListener for image to use as button to call web service implicit intent
-		image.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-//				Log.i(tag, "User Clicked on Image!!");
-				Uri website = Uri.parse(IMAGEURL);
-				Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
-				startActivity(websiteIntent);
-			}
-		});*/
-		
-
+		// Call getStoredData method in fragment to set UI data
 		DetailFrag.getStoredData(TITLE, YEAR, DIRECTOR, RATED, RUNTIME, 
 				GENRE, ACTORS, AWARDS, SCORE, PLOT, IMAGEURL);
 	}
 	
+	/* setRating method is used to pass in ratingBar value and store in variable that is used in
+	 * savedInstanceState
+	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#setRating(float)
+	 */
 	public void setRating(float myRating) {
 		FAV = myRating;
 	}
 	
+	/* onClickImage method is called from fragment when user clicks on image.
+	 * This method runs the website implicit intent.
+	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#onClickImage()
+	 */
 	public void onClickImage() {
 		Uri website = Uri.parse(IMAGEURL);
 		Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
 		startActivity(websiteIntent);
 	}
 
-/*	// Async Task to fetch image from url and set ImageView on post execute
-	private class downloadImage extends AsyncTask<String, Void, Bitmap> {
-
-		protected Bitmap doInBackground(String... urls) {
-			String urldisplay = urls[0];
-			Bitmap moviePoster = null;
-			try {
-				InputStream stream = new java.net.URL(urldisplay).openStream();
-				moviePoster = BitmapFactory.decodeStream(stream);
-			} catch (Exception e) {
-				Log.e("Error", e.getMessage());
-				e.printStackTrace();
-			}
-			return moviePoster;
-		}
-
-		protected void onPostExecute(Bitmap result) {
-			image.setImageBitmap(result);
-		}
-	} */
-	
 	/* Override methods
 	 * Finish method to pass favorite data back to main activity
 	 * onBackPressed method to override base android back button and call finish method
@@ -194,6 +115,7 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 	  super.finish();
 	} 
 	
+	// onBackPressed method overrides android back button to call finish method.
 	@Override public void onBackPressed() { 
 		super.onBackPressed(); 
 		finish(); 

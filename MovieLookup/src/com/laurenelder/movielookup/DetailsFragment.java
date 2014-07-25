@@ -2,9 +2,10 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 23, 2014
+ * Date:			Jul 24, 2014
  * Class:			Java 2 Term 1407
  */
+
 package com.laurenelder.movielookup;
 
 import java.io.InputStream;
@@ -12,10 +13,8 @@ import java.io.InputStream;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 
 public class DetailsFragment extends Fragment implements OnRatingBarChangeListener, OnClickListener{
 	
+	// Global Variables
 	static Context context;
 	ImageView image;
 	TextView titleTxt;
@@ -44,8 +44,8 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	TextView plotTxt;
 	RatingBar rBar;
 	Bitmap moviePoster;
-	String IMAGEURL;
 	
+	// Interface to methods in DetailActivity
 	public interface OnSelected {
 		public void setRating(float myRating);
 		public void onClickImage();
@@ -57,7 +57,6 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
-//		context = getActivity();
 		
 		if(activity instanceof OnSelected) {
 			parentActivity = (OnSelected) activity;
@@ -74,6 +73,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		
 		View view = inflater.inflate(R.layout.detail_layout, container);
 		
+		// Set UI elements to Global Variables
 		titleTxt = (TextView)view.findViewById(R.id.movieTitle);
 		yearTxt = (TextView)view.findViewById(R.id.movieYear);
 		directorTxt = (TextView)view.findViewById(R.id.movieDirector);
@@ -87,6 +87,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		image = (ImageView)view.findViewById(R.id.movieImage);
 		rBar = (RatingBar)view.findViewById(R.id.ratingBar);
 		
+		// Set onClick and onChange listeners for ratingBar and image
 		rBar.setOnRatingBarChangeListener(this);
 		image.setOnClickListener(this);
 			
@@ -97,6 +98,9 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	public void onRatingChanged(RatingBar ratingBar, float rating,
 			boolean fromUser) {
 		// TODO Auto-generated method stub
+		/* Call setRating method in DetailsActivity to store 
+		 * rating in variable to be used in savedInstanceState.
+		 */
 		parentActivity.setRating(rating);
 	}
 
@@ -106,7 +110,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		// Call Async Task to load movie image
 		new downloadImage().execute(url);
 		
-		String IMAGEURL = url;
+		// Set UI element data
 		titleTxt.setText(title);
 		yearTxt.setText(year);
 		directorTxt.setText(director);
@@ -137,6 +141,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		}
 
 		protected void onPostExecute(Bitmap result) {
+			// Set image
 			image.setImageBitmap(result);
 		}
 	}
@@ -144,6 +149,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		// Call onClickImage method in DetailActivity to call website Intent.
 		parentActivity.onClickImage();
 	} 
 }

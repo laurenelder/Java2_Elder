@@ -2,7 +2,7 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 23, 2014
+ * Date:			Jul 24, 2014
  * Class:			Java 2 Term 1407
  */
 
@@ -29,12 +29,14 @@ import android.widget.TextView;
 
 public class MainFragment extends Fragment implements OnClickListener, OnItemClickListener {
 	
+	// Global Variables
 	EditText searchField;
 	Button findButton;
 	ListView listView;
 	Context context;
 	ArrayAdapter<MovieListItems> listAdapter;
 	
+	// Interface to MainActivity methods
 	public interface OnSelected {
 		public boolean onFileCheck();
 		public void onListViewClick(final int position);
@@ -45,7 +47,6 @@ public class MainFragment extends Fragment implements OnClickListener, OnItemCli
 	
 	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
-	List<MovieDetails> movieDetails = new ArrayList<MovieDetails>();
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -67,39 +68,21 @@ public class MainFragment extends Fragment implements OnClickListener, OnItemCli
 		// TODO Auto-generated method stub
 		
 		View view = inflater.inflate(R.layout.activity_main, container);
-//		context = container.getContext();
 		
         searchField = (EditText)view.findViewById(R.id.searchField);
         findButton = (Button)view.findViewById(R.id.findButton);
         listView = (ListView)view.findViewById(R.id.list);
-        
-    	// Array Adapter for ListView
-//    	ArrayAdapter<MovieListItems> listAdapter;
-    	
-    	
+
     	// ListView Adapter Code 
-    	
- /*   	if (!movieList.isEmpty()) {
-    		listAdapter = new customListAdapter();
-    		listView.setAdapter(listAdapter);
-    		listView.setOnItemClickListener(this);
-    	}*/
-    	
 		listAdapter = new customListAdapter();
         ListView listView = (ListView)view.findViewById(R.id.list);
 		listView.setAdapter(listAdapter);
 		listView.setOnItemClickListener(this);
-        
-        
-/*    	if(parentActivity.onFileCheck()) {
-    		listAdapter.notifyDataSetChanged();
-    		findButton.setEnabled(false);
-    	}*/
-		
+
+		// Set onClickListener for search button
         findButton.setOnClickListener(this);
 		
 		return view;
-//		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	
     // Custom ListAdapter Class
@@ -159,6 +142,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnItemCli
 		MovieListItems newMovie = new MovieListItems(name, year, movieType, ID);
 		movieList.add(newMovie);
 //		findButton.setEnabled(false);
+		listAdapter.notifyDataSetChanged();
 	}
 	
 	public void setButtonFalse() {

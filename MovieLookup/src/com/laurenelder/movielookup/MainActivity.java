@@ -2,7 +2,7 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 17, 2014
+ * Date:			Jul 24, 2014
  * Class:			Java 2 Term 1407
  */
 
@@ -43,6 +43,7 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 	static Handler apiHandler = null;
 	boolean detailApi = false;
 	boolean dataAvailable = false;
+	boolean landscape;
 	FragmentManager fragManag;
 	MainFragment frag;
 	String myURL;
@@ -69,15 +70,14 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
         externalFileName = getResources().getString(R.string.file_name);
         na = getResources().getString(R.string.n_a);
 		
-//		onFileCheck();
+        // Set FragmentManager to allow calling methods in MainFragment
 		fragManag = getFragmentManager();
 		frag = (MainFragment)fragManag.findFragmentById(R.id.fragment1);
 		if(frag == null) {
 			frag = new MainFragment();
 		}
-/*		if (onFileCheck()) {
-			frag.setButton(false);
-		}*/
+		
+		// Check for saved files on load
 		onFileCheck();
     }
 
@@ -128,7 +128,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 		// Check for saved file and parse if available
         File checkForFile = getBaseContext().getFileStreamPath(externalFileName);
         if (checkForFile.exists()) {
-//        	findButton.setEnabled(false);
         	String fileContent = fileManager.readFromFile(context, externalFileName);
         	Log.i(tag, "File Check is Running");
         	if (!fileContent.isEmpty()) {
@@ -278,7 +277,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 						
 						// Write to internal file and disable button to prevent further api calls
 //						Log.i(tag, msg.obj.toString());
-//			        	findButton.setEnabled(false);
 			        	dataAvailable = true;
 			        	
 			        	// Read and parse date from internal file
@@ -383,7 +381,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 								, detailReleased, detailRuntime, detailGenre, detailDirector, detailActors
 								, detailPlot, detailAwards, detailImage, detailScore);
 					}
-//					listAdapter.notifyDataSetChanged();
 					completed = true;
 			} 
 			catch (JSONException e) {
@@ -458,6 +455,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 		if (type.matches("movieList")) {
 			MovieListItems newMovie = new MovieListItems(name, year, movieType, ID);
 			movieList.add(newMovie);
+			
+			// Add object to List in Fragment
 			frag.setObjects(name, year, movieType, ID);
 //			Log.i(tag, ID.toString());
 //			Log.i(tag, movieList.get(0).movieID.toString());

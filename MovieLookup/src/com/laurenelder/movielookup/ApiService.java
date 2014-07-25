@@ -2,9 +2,10 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 17, 2014
+ * Date:			Jul 24, 2014
  * Class:			Java 2 Term 1407
  */
+
 
 package com.laurenelder.movielookup;
 

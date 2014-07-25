@@ -1,7 +1,7 @@
 <!-- MovieLookup -->
 <!-- com.laurenelder.movielookup -->
 <!-- Devin "Lauren" Elder -->
-<!-- Jul 7, 2014 -->
+<!-- Jul 24, 2014 -->
 <!-- Java 2 Term 1407 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,6 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/spacebackground"
     tools:context="com.laurenelder.movielookup.MainActivity"
     tools:ignore="MergeRootFrame" >
 

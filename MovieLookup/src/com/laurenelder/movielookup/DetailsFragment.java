@@ -13,8 +13,11 @@ import java.io.InputStream;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,11 +47,12 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	TextView plotTxt;
 	RatingBar rBar;
 	Bitmap moviePoster;
+	String imageURL;
 	
 	// Interface to methods in DetailActivity
 	public interface OnSelected {
 		public void setRating(float myRating);
-		public void onClickImage();
+		public void onClickImage(String IMAGEurl);
 	}
 	
 	private OnSelected parentActivity;
@@ -56,13 +60,16 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
-		super.onAttach(activity);
 		
-		if(activity instanceof OnSelected) {
-			parentActivity = (OnSelected) activity;
+		if (activity != null) {
+			super.onAttach(activity);
+			
+			if(activity instanceof OnSelected) {
+				parentActivity = (OnSelected) activity;
 
-		} else {
-			throw new ClassCastException((activity.toString()) + "Did not impliment onSelected interface");
+			} else {
+				throw new ClassCastException((activity.toString()) + "Did not impliment onSelected interface");
+			}
 		}
 	}
 
@@ -101,7 +108,10 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		/* Call setRating method in DetailsActivity to store 
 		 * rating in variable to be used in savedInstanceState.
 		 */
-		parentActivity.setRating(rating);
+		
+		if (parentActivity != null) {
+			parentActivity.setRating(rating);
+		}
 	}
 
 	public void getStoredData(String title, String year, String director, String rated, String runtime, 
@@ -109,6 +119,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		
 		// Call Async Task to load movie image
 		new downloadImage().execute(url);
+		imageURL = url;
 		
 		// Set UI element data
 		titleTxt.setText(title);
@@ -121,7 +132,6 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		awardTxt.setText(awards);
 		scoreTxt.setText(score);
 		plotTxt.setText(plot);
-		
 	}
 	
 	// Async Task to fetch image from url and set ImageView on post execute
@@ -150,6 +160,12 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		// Call onClickImage method in DetailActivity to call website Intent.
-		parentActivity.onClickImage();
+		if (parentActivity != null) {
+			parentActivity.onClickImage(imageURL);
+		} else {
+			Uri website = Uri.parse(imageURL);
+			Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+			startActivity(websiteIntent);
+		}
 	} 
 }

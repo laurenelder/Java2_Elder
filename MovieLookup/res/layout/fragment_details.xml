@@ -6,11 +6,12 @@
 <!-- Jul 24, 2014 -->
 <!-- Java 2 Term 1407 -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" 
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container">
+    android:orientation="vertical"
+    android:id="@+id/container" >
     
     <fragment
         android:id="@+id/fragment2"
@@ -18,4 +19,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-</ScrollView>
+</LinearLayout>

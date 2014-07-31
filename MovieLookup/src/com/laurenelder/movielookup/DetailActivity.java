@@ -12,6 +12,7 @@ package com.laurenelder.movielookup;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,6 +54,14 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        
+        /* If device orientation becomes landscape after the detail activity has been called
+         * this code will close the detail activity to reveal the default landscape UI.
+         */
+		int screenOrientation = getResources().getConfiguration().orientation;
+		if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) { 
+			finish();
+		} 
 		
 		intent = this.getIntent();
 		
@@ -94,8 +103,8 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 	 * This method runs the website implicit intent.
 	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#onClickImage()
 	 */
-	public void onClickImage() {
-		Uri website = Uri.parse(IMAGEURL);
+	public void onClickImage(String IMAGEurl) {
+		Uri website = Uri.parse(IMAGEurl);
 		Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
 		startActivity(websiteIntent);
 	}

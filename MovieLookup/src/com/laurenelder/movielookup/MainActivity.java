@@ -16,14 +16,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,9 +35,10 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements MainFragment.OnSelected {
+public class MainActivity extends Activity implements MainFragment.OnSelected, DetailsFragment.OnSelected {
 	
 	// Global Variables
 	FileManager fileManager;
@@ -46,8 +51,13 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 	boolean landscape;
 	FragmentManager fragManag;
 	MainFragment frag;
+	FragmentManager fragDetailManag;
+	Fragment detailFrag;
 	String myURL;
 	String na;
+	int screenOrientation;
+	View detailsView;
+//	String lastItemClicked;
 	
 	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
@@ -76,9 +86,28 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 		if(frag == null) {
 			frag = new MainFragment();
 		}
+        // Set FragmentManager to allow calling methods in DetailFragment
+		fragDetailManag = getFragmentManager();
+		if (fragDetailManag.findFragmentById(R.id.fragment2) != null) {
+			detailFrag = (DetailsFragment)fragDetailManag.findFragmentById(R.id.fragment2);
+			if(detailFrag == null) {
+				detailFrag = new MainFragment();
+			}
+		}
 		
 		// Check for saved files on load
 		onFileCheck();
+		
+		// Get Device Orientation
+		screenOrientation = getResources().getConfiguration().orientation;
+		if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) { 
+			toggleDetailScreen("portrait");
+		} else {
+			toggleDetailScreen("landscape");
+			if (!movieList.isEmpty()) {
+				onListViewClick(0);
+			}
+		}
     }
 
     @Override
@@ -86,7 +115,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+  //      return true;
+    	return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -94,11 +124,23 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+/*        int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);*/
+    	switch(item.getItemId()) {
+    	case R.id.action_favorites:
+    		Toast.makeText(context, "Favorites was selected", Toast.LENGTH_SHORT).show();
+    		break;
+    	case R.id.action_search:
+    		Toast.makeText(context, "Search was selected", Toast.LENGTH_SHORT).show();
+    		break;
+    	case R.id.action_settings:
+    		Toast.makeText(context, "Settings was selected", Toast.LENGTH_SHORT).show();
+    		break;
+    	}
+    	return true;
     }
 
     /**
@@ -197,7 +239,35 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 								        		.detailTitle.toString());*/
 			        					
 								        // Start Detail Activity with extras for detail activity UI
-								        Intent detailIntent = new Intent(context, DetailActivity.class);
+			        					if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+									        Intent detailIntent = new Intent(context, DetailActivity.class);
+									        detailIntent.putExtra("title", movieDetails.get(k)
+									        		.detailTitle.toString());
+									        detailIntent.putExtra("year", movieDetails.get(k)
+									        		.detailYear.toString());
+									        detailIntent.putExtra("rated", movieDetails.get(k)
+									        		.detailRated.toString());
+									        detailIntent.putExtra("released", movieDetails.get(k)
+									        		.detailReleased.toString());
+									        detailIntent.putExtra("runtime", movieDetails.get(k)
+									        		.detailRuntime.toString());
+									        detailIntent.putExtra("genre", movieDetails.get(k)
+									        		.detailGenre.toString());
+									        detailIntent.putExtra("director", movieDetails.get(k)
+									        		.detailDirector.toString());
+									        detailIntent.putExtra("actors", movieDetails.get(k)
+									        		.detailActors.toString());
+									        detailIntent.putExtra("plot", movieDetails.get(k)
+									        		.detailPlot.toString());
+									        detailIntent.putExtra("awards", movieDetails.get(k)
+									        		.detailAwards.toString());
+									        detailIntent.putExtra("image", movieDetails.get(k)
+									        		.detailImage.toString());
+									        detailIntent.putExtra("score", movieDetails.get(k)
+									        		.detailScore.toString());
+									        startActivityForResult(detailIntent, 0);
+			        					}
+/*								        Intent detailIntent = new Intent(context, DetailActivity.class);
 								        detailIntent.putExtra("title", movieDetails.get(k)
 								        		.detailTitle.toString());
 								        detailIntent.putExtra("year", movieDetails.get(k)
@@ -222,7 +292,33 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
 								        		.detailImage.toString());
 								        detailIntent.putExtra("score", movieDetails.get(k)
 								        		.detailScore.toString());
-								        startActivityForResult(detailIntent, 0);
+								        startActivityForResult(detailIntent, 0);*/
+			        					else {
+			        						
+/*			        				        // Set FragmentManager to allow calling methods in MainFragment
+			        						fragManag = getFragmentManager();
+			        						frag = (MainFragment)fragManag.findFragmentById(R.id.fragment1);
+			        						if(frag == null) {
+			        							frag = new MainFragment();
+			        						}*/
+			        						
+
+				        						if (detailFrag != null) {
+				        							((DetailsFragment) detailFrag).getStoredData(
+				        									movieDetails.get(k).detailTitle.toString(), 
+				        									movieDetails.get(k).detailYear.toString(), 
+				        									movieDetails.get(k).detailDirector.toString(), 
+				        									movieDetails.get(k).detailRated.toString(), 
+				        									movieDetails.get(k).detailRuntime.toString(), 
+				        									movieDetails.get(k).detailGenre.toString(), 
+				        									movieDetails.get(k).detailActors.toString(), 
+				        									movieDetails.get(k).detailAwards.toString(), 
+				        									movieDetails.get(k).detailScore.toString(), 
+				        									movieDetails.get(k).detailPlot.toString(), 
+				        									movieDetails.get(k).detailImage.toString());
+				        						}
+			        						
+			        					}
 			        				}
 			        			}
 			        		}
@@ -527,7 +623,60 @@ public class MainActivity extends Activity implements MainFragment.OnSelected {
     			AlertDialog alertDialog = dialogBuilder.create();
     			alertDialog.show();
 
+ /*   			if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) { 
+    				if (!movieList.isEmpty()) {
+	        			for (int o = 0; o < movieDetails.size(); o++) {
+	        				if (movieList.get(o).movieName.toString()
+	        						.matches(title)) {
+	        					onListViewClick(o);
+	        				}
+	        			}
+    				}
+    			}*/
     		}
     	}
     }
+    
+    /* toggleDetailScreen method is called when the device reads that it is in landscape or portrait.
+     * Depending on the device orientation this method then hides or shows the movie details view.
+     */
+    public void toggleDetailScreen(String orientation) {
+    	Log.i(tag, "Screen Orientation Method hit!");
+    	if (orientation.matches("landscape")) {
+//    		detailsView = findViewById(R.id.fragment2);
+    		Log.i(tag, "Device is now in landscape!");
+    	}
+/*    	if (detailsView != null) {
+    		Log.i(tag, "Details Fragment is not null");
+ /*       	if (orientation.matches("portrait")) {
+            	if (detailsView.getVisibility() == View.VISIBLE){ 
+            		detailsView.setVisibility(View.GONE); 
+            		Log.i(tag, "Device is now in portrait!");
+            	}
+        	} else {
+            	if (detailsView.getVisibility() == View.GONE){ 
+            		detailsView.setVisibility(View.VISIBLE); 
+            		Log.i(tag, "Device is now in landscape!");
+            	}
+        	}
+    	}*/
+    }
+
+	@Override
+	public void setRating(float myRating) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClickImage(String IMAGEurl) {
+		// TODO Auto-generated method stub
+		Uri website = Uri.parse(IMAGEurl);
+		Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+		startActivity(websiteIntent);
+	}
+	
+	public void showDialogFrag(Dialog type) {
+		
+	}
 }

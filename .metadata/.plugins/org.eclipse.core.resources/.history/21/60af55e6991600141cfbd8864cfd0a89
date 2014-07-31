@@ -1,0 +1,159 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 24, 2014
+ * Class:			Java 2 Term 1407
+ */
+
+
+package com.laurenelder.movielookup;
+
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+
+import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
+
+public class DetailActivity extends Activity implements DetailsFragment.OnSelected{
+	
+	// Set Global Variables
+	static String tag = "DETAILSACTIVITY";
+	FragmentManager fragDetailManag;
+	DetailsFragment DetailFrag;
+	Bitmap moviePoster;
+	Intent intent;
+	
+	String TITLE;
+	String IMAGEURL;
+	Float FAV;
+	String YEAR;
+	String DIRECTOR;
+	String RATED;
+	String RUNTIME;
+	String GENRE;
+	String ACTORS;
+	String AWARDS;
+	String SCORE;
+	String PLOT;
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		// Load Details Fragment
+		setContentView(R.layout.fragment_details);
+		
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new PlaceholderFragment())
+                    .commit();
+        }
+		
+		intent = this.getIntent();
+		
+		// Initialize Fragment manager to call method in Fragment
+		fragDetailManag = getFragmentManager();
+		DetailFrag = (DetailsFragment)fragDetailManag.findFragmentById(R.id.fragment2);
+		if(DetailFrag == null) {
+			DetailFrag = new DetailsFragment();
+		}
+		
+		// Get all extras from intent and set to global variables
+		TITLE = intent.getExtras().getString("title");
+		IMAGEURL = intent.getExtras().getString("image");
+		FAV = (float) 0.0;
+		YEAR = intent.getExtras().getString("year");
+		DIRECTOR = intent.getExtras().getString("director");
+		RATED = intent.getExtras().getString("rated");
+		RUNTIME = intent.getExtras().getString("runtime");
+		GENRE = intent.getExtras().getString("genre");
+		ACTORS = intent.getExtras().getString("actors");
+		AWARDS = intent.getExtras().getString("awards");
+		SCORE = intent.getExtras().getString("score");
+		PLOT = intent.getExtras().getString("plot");
+		
+		// Call getStoredData method in fragment to set UI data
+		DetailFrag.getStoredData(TITLE, YEAR, DIRECTOR, RATED, RUNTIME, 
+				GENRE, ACTORS, AWARDS, SCORE, PLOT, IMAGEURL);
+	}
+	
+	/* setRating method is used to pass in ratingBar value and store in variable that is used in
+	 * savedInstanceState
+	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#setRating(float)
+	 */
+	public void setRating(float myRating) {
+		FAV = myRating;
+	}
+	
+	/* onClickImage method is called from fragment when user clicks on image.
+	 * This method runs the website implicit intent.
+	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#onClickImage()
+	 */
+	public void onClickImage() {
+		Uri website = Uri.parse(IMAGEURL);
+		Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+		startActivity(websiteIntent);
+	}
+
+	/* Override methods
+	 * Finish method to pass favorite data back to main activity
+	 * onBackPressed method to override base android back button and call finish method
+	 * Saved instance state to handle save and refresh of all global variables used in UI elements
+	 */
+	@Override
+	public void finish() {
+	  // Prepare data intent 
+	  Intent data = new Intent();
+	  data.putExtra("fav", FAV);
+	  data.putExtra("title", TITLE);
+	  setResult(RESULT_OK, data);
+	  super.finish();
+	} 
+	
+	// onBackPressed method overrides android back button to call finish method.
+	@Override public void onBackPressed() { 
+		super.onBackPressed(); 
+		finish(); 
+		}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  savedInstanceState.putString("TITLE", TITLE);
+	  savedInstanceState.putString("IMAGE", IMAGEURL);
+	  savedInstanceState.putFloat("FAV", FAV);
+	  savedInstanceState.putString("YEAR", YEAR);
+	  savedInstanceState.putString("DIRECTOR", DIRECTOR);
+	  savedInstanceState.putString("RATED", RATED);
+	  savedInstanceState.putString("RUNTIME", RUNTIME);
+	  savedInstanceState.putString("GENRE", GENRE);
+	  savedInstanceState.putString("ACTORS", ACTORS);
+	  savedInstanceState.putString("AWARDS", AWARDS);
+	  savedInstanceState.putString("SCORE", SCORE);
+	  savedInstanceState.putString("PLOT", PLOT);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+	    super.onRestoreInstanceState(savedInstanceState);
+	    // read previously saved data
+		TITLE = savedInstanceState.getString("TITLE");
+		IMAGEURL = savedInstanceState.getString("IMAGE");
+		FAV = savedInstanceState.getFloat("FAV");
+		YEAR = savedInstanceState.getString("YEAR");
+		DIRECTOR = savedInstanceState.getString("DIRECTOR");
+		RATED = savedInstanceState.getString("RATED");
+		RUNTIME = savedInstanceState.getString("RUNTIME");
+		GENRE = savedInstanceState.getString("GENRE");
+		ACTORS = savedInstanceState.getString("ACTORS");
+		AWARDS = savedInstanceState.getString("AWARDS");
+		SCORE = savedInstanceState.getString("SCORE");
+		PLOT = savedInstanceState.getString("PLOT");
+	}
+}

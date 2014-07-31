@@ -16,6 +16,10 @@
     <string name="title_text">Search to find all the information on your favorite movies!</string>
     <string name="button_text">Find!</string>
     <string name="search_hint">Star Trek</string>
+    <string name="favorites_dialog_text">My Favorites:</string>
+    <string name="search_dialog_text">Search by movie year:</string>
+    <string name="search_dialog_hint">Enter a 4 digit year</string>
+    <string name="settings_dialog_text">Select one of the following backgrounds to change your background:</string>
     <string name="main_api">http://www.omdbapi.com/?s=Star%20Trek_r=JSON</string>
     <string name="pre_detail_api">http://www.omdbapi.com/?i=</string>
     <string name="post_detail_api">_r=JSON</string>

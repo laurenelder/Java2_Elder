@@ -19,7 +19,7 @@ import android.os.Bundle;
 
 import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
 
-public class DetailActivity extends Activity implements DetailsFragment.OnSelected{
+public class DetailActivity extends Activity implements DetailsFragment.OnSelected {
 	
 	// Set Global Variables
 	static String tag = "DETAILSACTIVITY";
@@ -40,6 +40,7 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 	String AWARDS;
 	String SCORE;
 	String PLOT;
+	String myFav;
 	
 
 	@Override
@@ -85,17 +86,18 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 		AWARDS = intent.getExtras().getString("awards");
 		SCORE = intent.getExtras().getString("score");
 		PLOT = intent.getExtras().getString("plot");
+		myFav = intent.getExtras().getString("favorite");
 		
 		// Call getStoredData method in fragment to set UI data
 		DetailFrag.getStoredData(TITLE, YEAR, DIRECTOR, RATED, RUNTIME, 
-				GENRE, ACTORS, AWARDS, SCORE, PLOT, IMAGEURL);
+				GENRE, ACTORS, AWARDS, SCORE, PLOT, IMAGEURL, myFav);
 	}
 	
 	/* setRating method is used to pass in ratingBar value and store in variable that is used in
 	 * savedInstanceState
 	 * @see com.laurenelder.movielookup.DetailsFragment.OnSelected#setRating(float)
 	 */
-	public void setRating(float myRating) {
+	public void setRating(float myRating, String mName) {
 		FAV = myRating;
 	}
 	
@@ -146,6 +148,7 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 	  savedInstanceState.putString("AWARDS", AWARDS);
 	  savedInstanceState.putString("SCORE", SCORE);
 	  savedInstanceState.putString("PLOT", PLOT);
+	  savedInstanceState.putString("myFav", myFav);
 	}
 	
 	@Override
@@ -164,5 +167,6 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
 		AWARDS = savedInstanceState.getString("AWARDS");
 		SCORE = savedInstanceState.getString("SCORE");
 		PLOT = savedInstanceState.getString("PLOT");
+		myFav = savedInstanceState.getString("myFav");
 	}
 }

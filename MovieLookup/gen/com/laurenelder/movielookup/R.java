@@ -29,16 +29,18 @@ public final class R {
         public static final int spacebackground=0x7f020004;
     }
     public static final class id {
-        public static final int action_favorites=0x7f08001e;
-        public static final int action_search=0x7f08001f;
-        public static final int action_settings=0x7f08001d;
+        public static final int action_favorites=0x7f080024;
+        public static final int action_search=0x7f080025;
+        public static final int action_settings=0x7f080023;
         public static final int actorLabel=0x7f080014;
         public static final int awardsLabel=0x7f080016;
         public static final int container=0x7f080000;
         public static final int directorLabel=0x7f08000e;
+        public static final int favList=0x7f08001c;
+        public static final int favsText=0x7f08001b;
         public static final int findButton=0x7f080003;
-        public static final int fragment1=0x7f08001c;
-        public static final int fragment2=0x7f08001b;
+        public static final int fragment1=0x7f08001e;
+        public static final int fragment2=0x7f08001d;
         public static final int genreLabel=0x7f080012;
         public static final int imageHint=0x7f080008;
         public static final int list=0x7f080004;
@@ -58,7 +60,11 @@ public final class R {
         public static final int ratingLabel=0x7f08000c;
         public static final int runtimeLabel=0x7f080010;
         public static final int scoreLabel=0x7f080018;
+        public static final int searchDialogField=0x7f080020;
         public static final int searchField=0x7f080002;
+        public static final int searchText=0x7f08001f;
+        public static final int settingsSpinner=0x7f080022;
+        public static final int settingsText=0x7f080021;
         public static final int textView1=0x7f080001;
         public static final int yearLabel=0x7f08000b;
     }
@@ -69,6 +75,8 @@ public final class R {
         public static final int favorites_dialog=0x7f030003;
         public static final int fragment_details=0x7f030004;
         public static final int fragment_main=0x7f030005;
+        public static final int search_dialog=0x7f030006;
+        public static final int settings_dialog=0x7f030007;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -77,36 +85,40 @@ public final class R {
         public static final int action_favorites=0x7f050003;
         public static final int action_search=0x7f050004;
         public static final int action_settings=0x7f050002;
-        public static final int actor_str=0x7f050018;
-        public static final int alert_favMovie=0x7f05001e;
-        public static final int alert_favRating=0x7f050020;
-        public static final int alert_notFavMovie=0x7f05001f;
-        public static final int alert_title=0x7f05001d;
+        public static final int actor_str=0x7f05001c;
+        public static final int alert_favMovie=0x7f050022;
+        public static final int alert_favRating=0x7f050024;
+        public static final int alert_notFavMovie=0x7f050023;
+        public static final int alert_title=0x7f050021;
         public static final int app_name=0x7f050000;
-        public static final int awards_str=0x7f050019;
+        public static final int awards_str=0x7f05001d;
         public static final int button_text=0x7f050006;
-        public static final int connection_notification=0x7f05000c;
-        public static final int detail_file_name=0x7f050010;
-        public static final int details_notification=0x7f05000e;
-        public static final int director_str=0x7f050017;
-        public static final int file_name=0x7f05000f;
-        public static final int genre_str=0x7f050016;
+        public static final int connection_notification=0x7f050010;
+        public static final int detail_file_name=0x7f050014;
+        public static final int details_notification=0x7f050012;
+        public static final int director_str=0x7f05001b;
+        public static final int favorites_dialog_text=0x7f050008;
+        public static final int file_name=0x7f050013;
+        public static final int genre_str=0x7f05001a;
         public static final int hello_world=0x7f050001;
-        public static final int image_desciption=0x7f05001c;
-        public static final int image_hint=0x7f05001b;
-        public static final int input_notification=0x7f05000b;
-        public static final int main_api=0x7f050008;
-        public static final int n_a=0x7f050011;
-        public static final int post_detail_api=0x7f05000a;
-        public static final int pre_detail_api=0x7f050009;
-        public static final int rated_str=0x7f050013;
-        public static final int released_str=0x7f050014;
-        public static final int runtime_str=0x7f050015;
-        public static final int score_str=0x7f05001a;
+        public static final int image_desciption=0x7f050020;
+        public static final int image_hint=0x7f05001f;
+        public static final int input_notification=0x7f05000f;
+        public static final int main_api=0x7f05000c;
+        public static final int n_a=0x7f050015;
+        public static final int post_detail_api=0x7f05000e;
+        public static final int pre_detail_api=0x7f05000d;
+        public static final int rated_str=0x7f050017;
+        public static final int released_str=0x7f050018;
+        public static final int runtime_str=0x7f050019;
+        public static final int score_str=0x7f05001e;
+        public static final int search_dialog_hint=0x7f05000a;
+        public static final int search_dialog_text=0x7f050009;
         public static final int search_hint=0x7f050007;
-        public static final int searching_notification=0x7f05000d;
+        public static final int searching_notification=0x7f050011;
+        public static final int settings_dialog_text=0x7f05000b;
         public static final int title_text=0x7f050005;
-        public static final int year_str=0x7f050012;
+        public static final int year_str=0x7f050016;
     }
     public static final class style {
         /** 

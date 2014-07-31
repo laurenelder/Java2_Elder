@@ -51,7 +51,7 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 	
 	// Interface to methods in DetailActivity
 	public interface OnSelected {
-		public void setRating(float myRating);
+		public void setRating(float myRating, String mName);
 		public void onClickImage(String IMAGEurl);
 	}
 	
@@ -110,12 +110,12 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		 */
 		
 		if (parentActivity != null) {
-			parentActivity.setRating(rating);
+			parentActivity.setRating(rating, titleTxt.getText().toString());
 		}
 	}
 
 	public void getStoredData(String title, String year, String director, String rated, String runtime, 
-			String genre, String actors, String awards, String score, String plot, String url) {
+			String genre, String actors, String awards, String score, String plot, String url, String fav) {
 		
 		// Call Async Task to load movie image
 		new downloadImage().execute(url);
@@ -132,6 +132,12 @@ public class DetailsFragment extends Fragment implements OnRatingBarChangeListen
 		awardTxt.setText(awards);
 		scoreTxt.setText(score);
 		plotTxt.setText(plot);
+		
+		if (fav.matches("fav")) {
+			rBar.setRating(1);
+		} else {
+			rBar.setRating(0);
+		}
 	}
 	
 	// Async Task to fetch image from url and set ImageView on post execute

@@ -11,19 +11,24 @@ package com.laurenelder.movielookup;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.laurenelder.movielookup.AlertDialogFragment.DialogType;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +63,7 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 	String na;
 	int screenOrientation;
 	View detailsView;
+	SharedPreferences prefs;
 //	String lastItemClicked;
 	
 	// Class List to access movieList Objects
@@ -79,6 +86,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         fileManager = FileManager.getInstance();
         externalFileName = getResources().getString(R.string.file_name);
         na = getResources().getString(R.string.n_a);
+        
+        // Get Shared Preferences
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
         // Set FragmentManager to allow calling methods in MainFragment
 		fragManag = getFragmentManager();
@@ -131,13 +141,24 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         return super.onOptionsItemSelected(item);*/
     	switch(item.getItemId()) {
     	case R.id.action_favorites:
-    		Toast.makeText(context, "Favorites was selected", Toast.LENGTH_SHORT).show();
+//    		Toast.makeText(context, "Favorites was selected", Toast.LENGTH_SHORT).show();
+    		ArrayList<String> mList = new ArrayList<String>();
+    		if(!prefs.toString().isEmpty()) {
+				Map<String,?> entries = prefs.getAll();
+				for(Map.Entry<String,?> entry : entries.entrySet()){
+					mList.add(entry.getValue().toString());
+				}
+        		showDialogFrag(DialogType.FAVORITES, mList);
+    		}
+    		
     		break;
     	case R.id.action_search:
-    		Toast.makeText(context, "Search was selected", Toast.LENGTH_SHORT).show();
+//    		Toast.makeText(context, "Search was selected", Toast.LENGTH_SHORT).show();
+    		showDialogFrag(DialogType.SEARCH, null);
     		break;
     	case R.id.action_settings:
-    		Toast.makeText(context, "Settings was selected", Toast.LENGTH_SHORT).show();
+//    		Toast.makeText(context, "Settings was selected", Toast.LENGTH_SHORT).show();
+    		showDialogFrag(DialogType.SETTINGS, null);
     		break;
     	}
     	return true;
@@ -238,6 +259,16 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 /*					        					Log.i(tag, movieDetails.get(k)
 								        		.detailTitle.toString());*/
 			        					
+								        // Check if movie is favorite
+			        					String myFav = "not";
+					    				Map<String,?> entries = prefs.getAll();
+					    				for(Map.Entry<String,?> entry : entries.entrySet()){
+					    					if(entry.getValue().toString().contains(movieDetails.get(k)
+								        		.detailTitle.toString())) {
+										        myFav = "fav";
+					    					}          
+					    				}
+			        					
 								        // Start Detail Activity with extras for detail activity UI
 			        					if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
 									        Intent detailIntent = new Intent(context, DetailActivity.class);
@@ -265,6 +296,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 									        		.detailImage.toString());
 									        detailIntent.putExtra("score", movieDetails.get(k)
 									        		.detailScore.toString());
+									        
+									        detailIntent.putExtra("favorite", myFav);
+									        
 									        startActivityForResult(detailIntent, 0);
 			        					}
 /*								        Intent detailIntent = new Intent(context, DetailActivity.class);
@@ -315,7 +349,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 				        									movieDetails.get(k).detailAwards.toString(), 
 				        									movieDetails.get(k).detailScore.toString(), 
 				        									movieDetails.get(k).detailPlot.toString(), 
-				        									movieDetails.get(k).detailImage.toString());
+				        									movieDetails.get(k).detailImage.toString(),
+				        									myFav);
 				        						}
 			        						
 			        					}
@@ -605,23 +640,33 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     			String title = data.getStringExtra("title");
     			Float favValue = data.getFloatExtra("fav", 0);
 
-    			String favStr = favValue.toString();
-    			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+//    			String favStr = favValue.toString();
+/*    			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
     			dialogBuilder.setTitle(R.string.alert_title);
     			
-    			String dialogMessage = "";
+    			String dialogMessage = "";*/
     			
-    			if (favValue > 2.0) {
-        			dialogMessage = title + " " + getResources().getString(R.string.alert_favMovie) + "\r\n" + 
-        					getResources().getString(R.string.alert_favRating) + " " + favStr;
-    			} else {
-    				dialogMessage = title + " " + getResources().getString(R.string.alert_notFavMovie) + "\r\n" + 
-        					getResources().getString(R.string.alert_favRating) + " " + favStr;
+    			if (favValue == 1.0) {
+    				Integer entryCount = 0;
+    				boolean alreadyExists = false;
+    				Map<String,?> entries = prefs.getAll();
+    				for(Map.Entry<String,?> entry : entries.entrySet()){
+    					entryCount++;
+    					if (entry.getValue().toString().contains(title)) {
+    						alreadyExists = true;
+    					}
+    		            Log.i("map values",entry.getKey() + ": " + 
+    		                                   entry.getValue().toString());            
+    				}
+    				if (alreadyExists == false) {
+    					prefs.edit().putString("favorites" + entryCount.toString(), title).apply();
+    				}
+    				
     			}
     			
-    			dialogBuilder.setMessage(dialogMessage);
+/*    			dialogBuilder.setMessage(dialogMessage);
     			AlertDialog alertDialog = dialogBuilder.create();
-    			alertDialog.show();
+    			alertDialog.show();*/
 
  /*   			if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) { 
     				if (!movieList.isEmpty()) {
@@ -663,9 +708,24 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     }
 
 	@Override
-	public void setRating(float myRating) {
+	public void setRating(float myRating, String mName) {
 		// TODO Auto-generated method stub
-		
+		if (myRating == 1.0) {
+			Integer entryCount = 0;
+			boolean alreadyExists = false;
+			Map<String,?> entries = prefs.getAll();
+			for(Map.Entry<String,?> entry : entries.entrySet()){
+				entryCount++;
+				if (entry.getValue().toString().contains(mName)) {
+					alreadyExists = true;
+				}
+	            Log.i("map values",entry.getKey() + ": " + 
+	                                   entry.getValue().toString());            
+			}
+			if (alreadyExists == false) {
+				prefs.edit().putString("favorites" + entryCount.toString(), mName).apply();
+			}
+		}
 	}
 
 	@Override
@@ -676,7 +736,16 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 		startActivity(websiteIntent);
 	}
 	
-	public void showDialogFrag(Dialog type) {
-		
+	public void showDialogFrag(DialogType type, ArrayList movList) {
+		AlertDialogFragment dialogFrag = new AlertDialogFragment().newInstance(context, type, movList);
+		if (type == DialogType.FAVORITES) {
+			dialogFrag.show(getFragmentManager(), "favorites_dialog");
+		}
+		if (type == DialogType.SETTINGS) {
+			dialogFrag.show(getFragmentManager(), "settings_dialog");
+		}
+		if (type == DialogType.SEARCH) {
+			dialogFrag.show(getFragmentManager(), "search_dialog");
+		}
 	}
 }

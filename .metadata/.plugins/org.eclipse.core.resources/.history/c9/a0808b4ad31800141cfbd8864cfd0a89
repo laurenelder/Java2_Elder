@@ -1,0 +1,175 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 24, 2014
+ * Class:			Java 2 Term 1407
+ */
+
+package com.laurenelder.movielookup;
+
+import java.io.InputStream;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
+import android.widget.TextView;
+
+public class DetailsFragment extends Fragment implements OnRatingBarChangeListener, OnClickListener{
+	
+	// Global Variables
+	static Context context;
+	ImageView image;
+	TextView titleTxt;
+	TextView yearTxt;
+	TextView directorTxt;
+	TextView ratedTxt;
+	TextView runtimeTxt;
+	TextView genreTxt;
+	TextView actorTxt;
+	TextView awardTxt;
+	TextView scoreTxt;
+	TextView plotTxt;
+	RatingBar rBar;
+	Bitmap moviePoster;
+	String imageURL;
+	
+	// Interface to methods in DetailActivity
+	public interface OnSelected {
+		public void setRating(float myRating, String mName);
+		public void onClickImage(String IMAGEurl);
+	}
+	
+	private OnSelected parentActivity;
+
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		
+		if (activity != null) {
+			super.onAttach(activity);
+			
+			if(activity instanceof OnSelected) {
+				parentActivity = (OnSelected) activity;
+
+			} else {
+				throw new ClassCastException((activity.toString()) + "Did not impliment onSelected interface");
+			}
+		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		
+		View view = inflater.inflate(R.layout.detail_layout, container);
+		
+		// Set UI elements to Global Variables
+		titleTxt = (TextView)view.findViewById(R.id.movieTitle);
+		yearTxt = (TextView)view.findViewById(R.id.movieYear);
+		directorTxt = (TextView)view.findViewById(R.id.movieDirector);
+		ratedTxt = (TextView)view.findViewById(R.id.movieRating);
+		runtimeTxt = (TextView)view.findViewById(R.id.movieRuntime);
+		genreTxt = (TextView)view.findViewById(R.id.movieGenre);
+		actorTxt = (TextView)view.findViewById(R.id.movieActor);
+		awardTxt = (TextView)view.findViewById(R.id.movieAwards);
+		scoreTxt = (TextView)view.findViewById(R.id.movieScore);
+		plotTxt = (TextView)view.findViewById(R.id.moviePlot);
+		image = (ImageView)view.findViewById(R.id.movieImage);
+		rBar = (RatingBar)view.findViewById(R.id.ratingBar);
+		
+		// Set onClick and onChange listeners for ratingBar and image
+		rBar.setOnRatingBarChangeListener(this);
+		image.setOnClickListener(this);
+			
+		return view;
+	}
+
+	@Override
+	public void onRatingChanged(RatingBar ratingBar, float rating,
+			boolean fromUser) {
+		// TODO Auto-generated method stub
+		/* Call setRating method in DetailsActivity to store 
+		 * rating in variable to be used in savedInstanceState.
+		 */
+		
+		if (parentActivity != null) {
+			parentActivity.setRating(rating, titleTxt.getText().toString());
+		}
+	}
+
+	public void getStoredData(String title, String year, String director, String rated, String runtime, 
+			String genre, String actors, String awards, String score, String plot, String url, String fav) {
+		
+		// Call Async Task to load movie image
+		new downloadImage().execute(url);
+		imageURL = url;
+		
+		// Set UI element data
+		titleTxt.setText(title);
+		yearTxt.setText(year);
+		directorTxt.setText(director);
+		ratedTxt.setText(rated);
+		runtimeTxt.setText(runtime);
+		genreTxt.setText(genre);
+		actorTxt.setText(actors);
+		awardTxt.setText(awards);
+		scoreTxt.setText(score);
+		plotTxt.setText(plot);
+		
+		if (fav.matches("fav")) {
+			rBar.setRating(1);
+		}
+	}
+	
+	// Async Task to fetch image from url and set ImageView on post execute
+	private class downloadImage extends AsyncTask<String, Void, Bitmap> {
+
+		protected Bitmap doInBackground(String... urls) {
+			String urldisplay = urls[0];
+			Bitmap moviePoster = null;
+			try {
+				InputStream stream = new java.net.URL(urldisplay).openStream();
+				moviePoster = BitmapFactory.decodeStream(stream);
+			} catch (Exception e) {
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+			}
+			return moviePoster;
+		}
+
+		protected void onPostExecute(Bitmap result) {
+			// Set image
+			image.setImageBitmap(result);
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		// Call onClickImage method in DetailActivity to call website Intent.
+		if (parentActivity != null) {
+			parentActivity.onClickImage(imageURL);
+		} else {
+			Uri website = Uri.parse(imageURL);
+			Intent websiteIntent = new Intent(Intent.ACTION_VIEW, website);
+			startActivity(websiteIntent);
+		}
+	} 
+}

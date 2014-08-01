@@ -68,6 +68,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 	int screenOrientation;
 	View detailsView;
 	SharedPreferences prefs;
+	ArrayList<String> fullMovies;
+	ArrayList<String> fullMoviesYears;
 //	String lastItemClicked;
 	
 	// Class List to access movieList Objects
@@ -90,6 +92,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         fileManager = FileManager.getInstance();
         externalFileName = getResources().getString(R.string.file_name);
         na = getResources().getString(R.string.n_a);
+        fullMovies = new ArrayList<String>();
+        fullMoviesYears = new ArrayList<String>();
         
         // Get Shared Preferences
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -105,32 +109,33 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 					if (backgroundName.equals("blue_and_green")) {
 						Log.i(tag, "background set to 1");
 						Drawable bImage = rSources.getDrawable(R.drawable.blue_and_green); 
+						layout.setBackgroundResource(R.drawable.bright_star);
 //						layout.setBackgroundDrawable(bImage);
-						layout.setBackground(bImage);
+//						layout.setBackground(bImage);
 					}
 					if (backgroundName.equals("bright_star")) {
-//						layout.setBackgroundResource(R.drawable.bright_star);
+						layout.setBackgroundResource(R.drawable.bright_star);
 						Drawable bImage = rSources.getDrawable(R.drawable.bright_star);
 //						layout.setBackgroundDrawable(bImage);
-						layout.setBackground(bImage);
+//						layout.setBackground(bImage);
 					}
 					if (backgroundName.equals("faint_stars")) {
 						Drawable bImage = rSources.getDrawable(R.drawable.faint_stars); 
 //						layout.setBackgroundDrawable(bImage);
-						layout.setBackground(bImage);
-//						layout.setBackgroundResource(R.drawable.faint_stars);
+//						layout.setBackground(bImage);
+						layout.setBackgroundResource(R.drawable.faint_stars);
 					}
 					if (backgroundName.equals("nebula")) {
 						Drawable bImage = rSources.getDrawable(R.drawable.nebula); 
 //						layout.setBackgroundDrawable(bImage);
-						layout.setBackground(bImage);
-//						layout.setBackgroundResource(R.drawable.nebula);
+//						layout.setBackground(bImage);
+						layout.setBackgroundResource(R.drawable.nebula);
 					}
 					if (backgroundName.equals("planets_and_nebula")) {
 						Drawable bImage = rSources.getDrawable(R.drawable.planets_and_nebula); 
 //						layout.setBackgroundDrawable(bImage);
-						layout.setBackground(bImage);
-//						layout.setBackgroundResource(R.drawable.planets_and_nebula);
+//						layout.setBackground(bImage);
+						layout.setBackgroundResource(R.drawable.planets_and_nebula);
 					}
 					
 				}
@@ -638,6 +643,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 			
 			// Add object to List in Fragment
 			frag.setObjects(name, year, movieType, ID);
+			fullMovies.add(name);
+			fullMoviesYears.add(year);
+			
 //			Log.i(tag, ID.toString());
 //			Log.i(tag, movieList.get(0).movieID.toString());
 //			Log.i(tag, newMovie.toString());
@@ -786,7 +794,10 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 	}
 	
 	public void showDialogFrag(DialogType type, ArrayList movList) {
-		AlertDialogFragment dialogFrag = new AlertDialogFragment().newInstance(context, type, movList);
+		
+		
+		
+		AlertDialogFragment dialogFrag = new AlertDialogFragment().newInstance(context, type, movList, fullMovies, fullMoviesYears);
 		if (type == DialogType.FAVORITES) {
 			dialogFrag.show(getFragmentManager(), "favorites_dialog");
 		}

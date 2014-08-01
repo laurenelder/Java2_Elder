@@ -13,10 +13,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,7 +28,9 @@ import android.widget.Spinner;
 public class AlertDialogFragment extends DialogFragment{
 	
 	public static DialogType type;
+	public static ArrayList fList;
 	public static ArrayList mList;
+	public static ArrayList yList;
 	public static Context context;
 	public enum DialogType {
 		FAVORITES,
@@ -34,9 +39,12 @@ public class AlertDialogFragment extends DialogFragment{
 	}
 //	int selected;
 	
-	static AlertDialogFragment newInstance(Context appContext, DialogType dialogType, ArrayList movies) {
+	static AlertDialogFragment newInstance(Context appContext, DialogType dialogType, ArrayList movies, 
+			ArrayList fullMovies, ArrayList years) {
 		type = dialogType;
-		mList = movies;
+		fList = movies;
+		mList = fullMovies;
+		yList = years;
 		context = appContext;
 		return new AlertDialogFragment();
 	}
@@ -65,7 +73,7 @@ public class AlertDialogFragment extends DialogFragment{
 			
 			// Set up list and adapter
 			ListView favList = (ListView)favView.findViewById(R.id.favList);
-			ArrayAdapter listAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, mList);
+			ArrayAdapter listAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, fList);
 			favList.setAdapter(listAdapter);
 			break;
 		case SETTINGS:
@@ -126,7 +134,8 @@ public class AlertDialogFragment extends DialogFragment{
 			
 			break;
 		case SEARCH:
-			dialogBuilder.setView(dialogInflater.inflate(R.layout.search_dialog, null))
+			View searchView = dialogInflater.inflate(R.layout.search_dialog, null);
+			dialogBuilder.setView(searchView)
 			.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
 				
 				@Override
@@ -135,6 +144,41 @@ public class AlertDialogFragment extends DialogFragment{
 					AlertDialogFragment.this.getDialog().cancel();
 				}
 			});
+			
+			final ArrayList<String> filteredMovies = new ArrayList<String>();
+			
+			final EditText inputText = (EditText)searchView.findViewById(R.id.searchDialogField);
+			final Button inputButton = (Button)searchView.findViewById(R.id.searchDialogButton);
+			final ListView searchList = (ListView)searchView.findViewById(R.id.searchList);
+			
+
+			
+			final ArrayAdapter searchListAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, filteredMovies);
+			searchList.setAdapter(searchListAdapter);
+			
+			inputButton.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					filteredMovies.removeAll(filteredMovies);
+					
+					for (int a = 0; a < yList.size(); a++) {
+						if (yList.get(a).toString().matches(inputText.getText().toString())) {
+							filteredMovies.add(mList.get(a).toString());
+							
+						}
+					}
+					
+					if(filteredMovies.isEmpty()) {
+						filteredMovies.add("No Results Found");
+					}
+					
+					searchListAdapter.notifyDataSetChanged();
+				}
+				
+			});
+			
 			break;
 		}
 		

@@ -9,13 +9,21 @@
 
 package com.laurenelder.movielookup;
 
+import java.util.Map;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.laurenelder.movielookup.MainActivity.PlaceholderFragment;
 
@@ -55,6 +63,52 @@ public class DetailActivity extends Activity implements DetailsFragment.OnSelect
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        
+     // Get Shared Preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		if(!prefs.toString().isEmpty()) {
+			Map<String,?> entries = prefs.getAll();
+			for(Map.Entry<String,?> entry : entries.entrySet()){
+				if(entry.getKey().toString().matches("background")) {
+					Log.i(tag, "entry matched background!");
+					LinearLayout layout = (LinearLayout)findViewById(R.id.container);
+					String backgroundName = entry.getValue().toString();
+					Resources rSources = getResources();
+					
+					if (backgroundName.equals("blue_and_green")) {
+						Log.i(tag, "background set to 1");
+						Drawable bImage = rSources.getDrawable(R.drawable.blue_and_green); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+					}
+					if (backgroundName.equals("bright_star")) {
+//						layout.setBackgroundResource(R.drawable.bright_star);
+						Drawable bImage = rSources.getDrawable(R.drawable.bright_star);
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+					}
+					if (backgroundName.equals("faint_stars")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.faint_stars); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.faint_stars);
+					}
+					if (backgroundName.equals("nebula")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.nebula); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.nebula);
+					}
+					if (backgroundName.equals("planets_and_nebula")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.planets_and_nebula); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.planets_and_nebula);
+					}
+					
+				}
+			}
+		}
         
         /* If device orientation becomes landscape after the detail activity has been called
          * this code will close the detail activity to reveal the default landscape UI.

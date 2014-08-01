@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.laurenelder.movielookup.AlertDialogFragment.DialogType;
+import com.laurenelder.movielookup.R.drawable;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -30,6 +31,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -42,6 +45,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements MainFragment.OnSelected, DetailsFragment.OnSelected {
@@ -89,6 +93,49 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         
         // Get Shared Preferences
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		if(!prefs.toString().isEmpty()) {
+			Map<String,?> entries = prefs.getAll();
+			for(Map.Entry<String,?> entry : entries.entrySet()){
+				if(entry.getKey().toString().matches("background")) {
+					Log.i(tag, "entry matched background!");
+					LinearLayout layout = (LinearLayout)findViewById(R.id.container);
+					String backgroundName = entry.getValue().toString();
+					Resources rSources = getResources();
+					
+					if (backgroundName.equals("blue_and_green")) {
+						Log.i(tag, "background set to 1");
+						Drawable bImage = rSources.getDrawable(R.drawable.blue_and_green); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+					}
+					if (backgroundName.equals("bright_star")) {
+//						layout.setBackgroundResource(R.drawable.bright_star);
+						Drawable bImage = rSources.getDrawable(R.drawable.bright_star);
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+					}
+					if (backgroundName.equals("faint_stars")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.faint_stars); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.faint_stars);
+					}
+					if (backgroundName.equals("nebula")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.nebula); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.nebula);
+					}
+					if (backgroundName.equals("planets_and_nebula")) {
+						Drawable bImage = rSources.getDrawable(R.drawable.planets_and_nebula); 
+//						layout.setBackgroundDrawable(bImage);
+						layout.setBackground(bImage);
+//						layout.setBackgroundResource(R.drawable.planets_and_nebula);
+					}
+					
+				}
+			}
+		}
 		
         // Set FragmentManager to allow calling methods in MainFragment
 		fragManag = getFragmentManager();
@@ -146,7 +193,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     		if(!prefs.toString().isEmpty()) {
 				Map<String,?> entries = prefs.getAll();
 				for(Map.Entry<String,?> entry : entries.entrySet()){
-					mList.add(entry.getValue().toString());
+					if(!entry.getKey().toString().matches("background")) {
+						mList.add(entry.getValue().toString());
+					}
 				}
         		showDialogFrag(DialogType.FAVORITES, mList);
     		}

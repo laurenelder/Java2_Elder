@@ -7,14 +7,20 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 public class AlertDialogFragment extends DialogFragment{
 	
@@ -40,7 +46,8 @@ public class AlertDialogFragment extends DialogFragment{
 		// TODO Auto-generated method stub
 		
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-		LayoutInflater dialogInflater = getActivity().getLayoutInflater();
+		final LayoutInflater dialogInflater = getActivity().getLayoutInflater();
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
 		switch(type) {
 		case FAVORITES:
@@ -62,7 +69,8 @@ public class AlertDialogFragment extends DialogFragment{
 			favList.setAdapter(listAdapter);
 			break;
 		case SETTINGS:
-			dialogBuilder.setView(dialogInflater.inflate(R.layout.settings_dialog, null))
+			View settingsView = dialogInflater.inflate(R.layout.settings_dialog, null);
+			dialogBuilder.setView(settingsView)
 			.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
 				
 				@Override
@@ -71,6 +79,51 @@ public class AlertDialogFragment extends DialogFragment{
 					AlertDialogFragment.this.getDialog().cancel();
 				}
 			});
+			
+			ArrayList<String> backgroundList = new ArrayList<String>();
+			backgroundList.add("Background 1");
+			backgroundList.add("Background 2");
+			backgroundList.add("Background 3");
+			backgroundList.add("Background 4");
+			backgroundList.add("Background 5");
+			
+			Spinner settingsSpinner = (Spinner)settingsView.findViewById(R.id.settingsSpinner);
+			ArrayAdapter<String> settingsAdapter = new ArrayAdapter<String>
+				(context, android.R.layout.simple_spinner_item, backgroundList);
+			settingsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			settingsSpinner.setAdapter(settingsAdapter);
+			settingsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+				@Override
+				public void onItemSelected(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					
+					// TODO Auto-generated method stub
+					if (position == 0) {
+						prefs.edit().putString("background", "blue_and_green").apply();
+					}
+					if (position == 1) {
+						prefs.edit().putString("background", "bright_star").apply();
+					}
+					if (position == 2) {
+						prefs.edit().putString("background", "faint_stars").apply();
+					}
+					if (position == 3) {
+						prefs.edit().putString("background", "nebula").apply();
+					}
+					if (position == 4) {
+						prefs.edit().putString("background", "planets_and_nebula").apply();
+					}
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
 			break;
 		case SEARCH:
 			dialogBuilder.setView(dialogInflater.inflate(R.layout.search_dialog, null))
@@ -87,6 +140,5 @@ public class AlertDialogFragment extends DialogFragment{
 		
 		return dialogBuilder.create();
 	}
-	
 	
 }

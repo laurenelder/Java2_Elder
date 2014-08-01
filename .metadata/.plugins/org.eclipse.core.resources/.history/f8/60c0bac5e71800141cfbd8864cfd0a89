@@ -1,0 +1,92 @@
+package com.laurenelder.movielookup;
+
+import java.util.ArrayList;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+public class AlertDialogFragment extends DialogFragment{
+	
+	public static DialogType type;
+	public static ArrayList mList;
+	public static Context context;
+	public enum DialogType {
+		FAVORITES,
+		SETTINGS,
+		SEARCH
+	}
+//	int selected;
+	
+	static AlertDialogFragment newInstance(Context appContext, DialogType dialogType, ArrayList movies) {
+		type = dialogType;
+		mList = movies;
+		context = appContext;
+		return new AlertDialogFragment();
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+		LayoutInflater dialogInflater = getActivity().getLayoutInflater();
+		
+		switch(type) {
+		case FAVORITES:
+			Log.i("AlertFrag", mList.toString());
+			View favView = dialogInflater.inflate(R.layout.favorites_dialog, null);
+			dialogBuilder.setView(favView)
+			.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					AlertDialogFragment.this.getDialog().cancel();
+				}
+			});
+			
+			// Set up list and adapter
+			ListView favList = (ListView)favView.findViewById(R.id.favList);
+			ArrayAdapter listAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, mList);
+			favList.setAdapter(listAdapter);
+			break;
+		case SETTINGS:
+			dialogBuilder.setView(dialogInflater.inflate(R.layout.settings_dialog, null))
+			.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					AlertDialogFragment.this.getDialog().cancel();
+				}
+			});
+			break;
+		case SEARCH:
+			dialogBuilder.setView(dialogInflater.inflate(R.layout.search_dialog, null))
+			.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					AlertDialogFragment.this.getDialog().cancel();
+				}
+			});
+			break;
+		}
+		
+		return dialogBuilder.create();
+	}
+	
+	
+}

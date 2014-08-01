@@ -1,7 +1,7 @@
 <!-- MovieLookup -->
 <!-- com.laurenelder.movielookup -->
 <!-- Devin "Lauren" Elder -->
-<!-- Jul 24, 2014 -->
+<!-- Jul 31, 2014 -->
 <!-- Java 2 Term 1407 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,7 +30,7 @@
 
         <EditText
             android:id="@+id/searchField"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"

@@ -1,3 +1,11 @@
+/*
+ * Project:			MovieLookup
+ * Package:			com.laurenelder.movielookup
+ * Author:			Devin "Lauren" Elder
+ * Date:			Jul 31, 2014
+ * Class:			Java 2 Term 1407
+ */
+
 package com.laurenelder.movielookup;
 
 import java.util.ArrayList;
@@ -14,33 +22,31 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 public class AlertDialogFragment extends DialogFragment{
 	
+	// Set Global Variables
 	public static DialogType type;
-	public static ArrayList fList;
-	public static ArrayList mList;
-	public static ArrayList yList;
+	public static ArrayList<String> fList;
+	public static ArrayList<String> mList;
+	public static ArrayList<String> yList;
 	public static Context context;
 	public enum DialogType {
 		FAVORITES,
 		SETTINGS,
 		SEARCH
 	}
-//	int selected;
 	
-	static AlertDialogFragment newInstance(Context appContext, DialogType dialogType, ArrayList movies, 
-			ArrayList fullMovies, ArrayList years) {
+	// Establish Instance of AlertDialogFragmentClass
+	static AlertDialogFragment newInstance(Context appContext, DialogType dialogType, ArrayList<String> movies, 
+			ArrayList<String> fullMovies, ArrayList<String> years) {
 		type = dialogType;
 		fList = movies;
 		mList = fullMovies;
@@ -49,6 +55,7 @@ public class AlertDialogFragment extends DialogFragment{
 		return new AlertDialogFragment();
 	}
 
+	// Build and Display the AlertDialogFragment
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -73,7 +80,7 @@ public class AlertDialogFragment extends DialogFragment{
 			
 			// Set up list and adapter
 			ListView favList = (ListView)favView.findViewById(R.id.favList);
-			ArrayAdapter listAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, fList);
+			ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, fList);
 			favList.setAdapter(listAdapter);
 			break;
 		case SETTINGS:
@@ -153,7 +160,7 @@ public class AlertDialogFragment extends DialogFragment{
 			
 
 			
-			final ArrayAdapter searchListAdapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, filteredMovies);
+			final ArrayAdapter<String> searchListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, filteredMovies);
 			searchList.setAdapter(searchListAdapter);
 			
 			inputButton.setOnClickListener(new OnClickListener(){

@@ -2,7 +2,7 @@
  * Project:			MovieLookup
  * Package:			com.laurenelder.movielookup
  * Author:			Devin "Lauren" Elder
- * Date:			Jul 24, 2014
+ * Date:			Jul 31, 2014
  * Class:			Java 2 Term 1407
  */
 
@@ -17,14 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.laurenelder.movielookup.AlertDialogFragment.DialogType;
-import com.laurenelder.movielookup.R.drawable;
-
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -48,6 +41,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.laurenelder.movielookup.AlertDialogFragment.DialogType;
+
 public class MainActivity extends Activity implements MainFragment.OnSelected, DetailsFragment.OnSelected {
 	
 	// Global Variables
@@ -70,7 +65,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 	SharedPreferences prefs;
 	ArrayList<String> fullMovies;
 	ArrayList<String> fullMoviesYears;
-//	String lastItemClicked;
 	
 	// Class List to access movieList Objects
 	List<MovieListItems> movieList = new ArrayList<MovieListItems>();
@@ -106,33 +100,34 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 					String backgroundName = entry.getValue().toString();
 					Resources rSources = getResources();
 					
+					// Set Background from Shared Preferences
 					if (backgroundName.equals("blue_and_green")) {
 						Log.i(tag, "background set to 1");
-						Drawable bImage = rSources.getDrawable(R.drawable.blue_and_green); 
+//						Drawable bImage = rSources.getDrawable(R.drawable.blue_and_green); 
 						layout.setBackgroundResource(R.drawable.bright_star);
 //						layout.setBackgroundDrawable(bImage);
 //						layout.setBackground(bImage);
 					}
 					if (backgroundName.equals("bright_star")) {
 						layout.setBackgroundResource(R.drawable.bright_star);
-						Drawable bImage = rSources.getDrawable(R.drawable.bright_star);
+//						Drawable bImage = rSources.getDrawable(R.drawable.bright_star);
 //						layout.setBackgroundDrawable(bImage);
 //						layout.setBackground(bImage);
 					}
 					if (backgroundName.equals("faint_stars")) {
-						Drawable bImage = rSources.getDrawable(R.drawable.faint_stars); 
+//						Drawable bImage = rSources.getDrawable(R.drawable.faint_stars); 
 //						layout.setBackgroundDrawable(bImage);
 //						layout.setBackground(bImage);
 						layout.setBackgroundResource(R.drawable.faint_stars);
 					}
 					if (backgroundName.equals("nebula")) {
-						Drawable bImage = rSources.getDrawable(R.drawable.nebula); 
+//						Drawable bImage = rSources.getDrawable(R.drawable.nebula); 
 //						layout.setBackgroundDrawable(bImage);
 //						layout.setBackground(bImage);
 						layout.setBackgroundResource(R.drawable.nebula);
 					}
 					if (backgroundName.equals("planets_and_nebula")) {
-						Drawable bImage = rSources.getDrawable(R.drawable.planets_and_nebula); 
+//						Drawable bImage = rSources.getDrawable(R.drawable.planets_and_nebula); 
 //						layout.setBackgroundDrawable(bImage);
 //						layout.setBackground(bImage);
 						layout.setBackgroundResource(R.drawable.planets_and_nebula);
@@ -162,10 +157,7 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 		
 		// Get Device Orientation
 		screenOrientation = getResources().getConfiguration().orientation;
-		if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) { 
-			toggleDetailScreen("portrait");
-		} else {
-			toggleDetailScreen("landscape");
+		if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) { 
 			if (!movieList.isEmpty()) {
 				onListViewClick(0);
 			}
@@ -177,7 +169,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-  //      return true;
     	return super.onCreateOptionsMenu(menu);
     }
 
@@ -186,12 +177,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-/*        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);*/
     	switch(item.getItemId()) {
+    	
+    	// Show Favorites Dialog
     	case R.id.action_favorites:
 //    		Toast.makeText(context, "Favorites was selected", Toast.LENGTH_SHORT).show();
     		ArrayList<String> mList = new ArrayList<String>();
@@ -206,10 +194,14 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     		}
     		
     		break;
+    		
+    	// Show Search Dialog
     	case R.id.action_search:
 //    		Toast.makeText(context, "Search was selected", Toast.LENGTH_SHORT).show();
     		showDialogFrag(DialogType.SEARCH, null);
     		break;
+    		
+    	// Show Settings Dialog
     	case R.id.action_settings:
 //    		Toast.makeText(context, "Settings was selected", Toast.LENGTH_SHORT).show();
     		showDialogFrag(DialogType.SETTINGS, null);
@@ -225,13 +217,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 
         public PlaceholderFragment() {
         }
-
-/*        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.activity_main, container, false);
-            return rootView;
-        }*/
     }
     
     /* OnFileCheck method checks to see if local file is available and returns boolean depending on if
@@ -264,7 +249,6 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
         	}
         	frag.setButtonFalse();
         } else {
-//        	findButton.setEnabled(true);
         	fileAvailable = false;
         }
         
@@ -317,7 +301,7 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 			        					String myFav = "not";
 					    				Map<String,?> entries = prefs.getAll();
 					    				for(Map.Entry<String,?> entry : entries.entrySet()){
-					    					if(entry.getValue().toString().contains(movieDetails.get(k)
+					    					if(entry.getValue().toString().matches(movieDetails.get(k)
 								        		.detailTitle.toString())) {
 										        myFav = "fav";
 					    					}          
@@ -352,61 +336,26 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 									        		.detailScore.toString());
 									        
 									        detailIntent.putExtra("favorite", myFav);
-									        
+
 									        startActivityForResult(detailIntent, 0);
 			        					}
-/*								        Intent detailIntent = new Intent(context, DetailActivity.class);
-								        detailIntent.putExtra("title", movieDetails.get(k)
-								        		.detailTitle.toString());
-								        detailIntent.putExtra("year", movieDetails.get(k)
-								        		.detailYear.toString());
-								        detailIntent.putExtra("rated", movieDetails.get(k)
-								        		.detailRated.toString());
-								        detailIntent.putExtra("released", movieDetails.get(k)
-								        		.detailReleased.toString());
-								        detailIntent.putExtra("runtime", movieDetails.get(k)
-								        		.detailRuntime.toString());
-								        detailIntent.putExtra("genre", movieDetails.get(k)
-								        		.detailGenre.toString());
-								        detailIntent.putExtra("director", movieDetails.get(k)
-								        		.detailDirector.toString());
-								        detailIntent.putExtra("actors", movieDetails.get(k)
-								        		.detailActors.toString());
-								        detailIntent.putExtra("plot", movieDetails.get(k)
-								        		.detailPlot.toString());
-								        detailIntent.putExtra("awards", movieDetails.get(k)
-								        		.detailAwards.toString());
-								        detailIntent.putExtra("image", movieDetails.get(k)
-								        		.detailImage.toString());
-								        detailIntent.putExtra("score", movieDetails.get(k)
-								        		.detailScore.toString());
-								        startActivityForResult(detailIntent, 0);*/
 			        					else {
-			        						
-/*			        				        // Set FragmentManager to allow calling methods in MainFragment
-			        						fragManag = getFragmentManager();
-			        						frag = (MainFragment)fragManag.findFragmentById(R.id.fragment1);
-			        						if(frag == null) {
-			        							frag = new MainFragment();
-			        						}*/
-			        						
+			        						if (detailFrag != null) {
+			        							((DetailsFragment) detailFrag).getStoredData(
+			        									movieDetails.get(k).detailTitle.toString(), 
+			        									movieDetails.get(k).detailYear.toString(), 
+			        									movieDetails.get(k).detailDirector.toString(), 
+			        									movieDetails.get(k).detailRated.toString(), 
+			        									movieDetails.get(k).detailRuntime.toString(), 
+			        									movieDetails.get(k).detailGenre.toString(), 
+			        									movieDetails.get(k).detailActors.toString(), 
+			        									movieDetails.get(k).detailAwards.toString(), 
+			        									movieDetails.get(k).detailScore.toString(), 
+			        									movieDetails.get(k).detailPlot.toString(), 
+			        									movieDetails.get(k).detailImage.toString(),
+			        									myFav);
+			        						}
 
-				        						if (detailFrag != null) {
-				        							((DetailsFragment) detailFrag).getStoredData(
-				        									movieDetails.get(k).detailTitle.toString(), 
-				        									movieDetails.get(k).detailYear.toString(), 
-				        									movieDetails.get(k).detailDirector.toString(), 
-				        									movieDetails.get(k).detailRated.toString(), 
-				        									movieDetails.get(k).detailRuntime.toString(), 
-				        									movieDetails.get(k).detailGenre.toString(), 
-				        									movieDetails.get(k).detailActors.toString(), 
-				        									movieDetails.get(k).detailAwards.toString(), 
-				        									movieDetails.get(k).detailScore.toString(), 
-				        									movieDetails.get(k).detailPlot.toString(), 
-				        									movieDetails.get(k).detailImage.toString(),
-				        									myFav);
-				        						}
-			        						
 			        					}
 			        				}
 			        			}
@@ -696,13 +645,8 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     			// Get data and construct dialog
     			String title = data.getStringExtra("title");
     			Float favValue = data.getFloatExtra("fav", 0);
-
-//    			String favStr = favValue.toString();
-/*    			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
-    			dialogBuilder.setTitle(R.string.alert_title);
     			
-    			String dialogMessage = "";*/
-    			
+    			// Set Favorite In Shared Preferences
     			if (favValue == 1.0) {
     				Integer entryCount = 0;
     				boolean alreadyExists = false;
@@ -720,50 +664,11 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
     				}
     				
     			}
-    			
-/*    			dialogBuilder.setMessage(dialogMessage);
-    			AlertDialog alertDialog = dialogBuilder.create();
-    			alertDialog.show();*/
-
- /*   			if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) { 
-    				if (!movieList.isEmpty()) {
-	        			for (int o = 0; o < movieDetails.size(); o++) {
-	        				if (movieList.get(o).movieName.toString()
-	        						.matches(title)) {
-	        					onListViewClick(o);
-	        				}
-	        			}
-    				}
-    			}*/
     		}
     	}
     }
-    
-    /* toggleDetailScreen method is called when the device reads that it is in landscape or portrait.
-     * Depending on the device orientation this method then hides or shows the movie details view.
-     */
-    public void toggleDetailScreen(String orientation) {
-    	Log.i(tag, "Screen Orientation Method hit!");
-    	if (orientation.matches("landscape")) {
-//    		detailsView = findViewById(R.id.fragment2);
-    		Log.i(tag, "Device is now in landscape!");
-    	}
-/*    	if (detailsView != null) {
-    		Log.i(tag, "Details Fragment is not null");
- /*       	if (orientation.matches("portrait")) {
-            	if (detailsView.getVisibility() == View.VISIBLE){ 
-            		detailsView.setVisibility(View.GONE); 
-            		Log.i(tag, "Device is now in portrait!");
-            	}
-        	} else {
-            	if (detailsView.getVisibility() == View.GONE){ 
-            		detailsView.setVisibility(View.VISIBLE); 
-            		Log.i(tag, "Device is now in landscape!");
-            	}
-        	}
-    	}*/
-    }
 
+    // Set Favorite In Shared Preferences
 	@Override
 	public void setRating(float myRating, String mName) {
 		// TODO Auto-generated method stub
@@ -785,6 +690,9 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 		}
 	}
 
+	/* onClickImage methods handles calling the website Intent when the user touches the image
+	 * while the device is in landscape.
+	 */
 	@Override
 	public void onClickImage(String IMAGEurl) {
 		// TODO Auto-generated method stub
@@ -793,11 +701,10 @@ public class MainActivity extends Activity implements MainFragment.OnSelected, D
 		startActivity(websiteIntent);
 	}
 	
-	public void showDialogFrag(DialogType type, ArrayList movList) {
-		
-		
-		
-		AlertDialogFragment dialogFrag = new AlertDialogFragment().newInstance(context, type, movList, fullMovies, fullMoviesYears);
+	// showDialogFrag method calls the AlertDialogClass when a icon is clicked in the action bar.
+	public void showDialogFrag(DialogType type, ArrayList<String> movList) {
+		new AlertDialogFragment();
+		AlertDialogFragment dialogFrag = AlertDialogFragment.newInstance(context, type, movList, fullMovies, fullMoviesYears);
 		if (type == DialogType.FAVORITES) {
 			dialogFrag.show(getFragmentManager(), "favorites_dialog");
 		}
